@@ -1,4 +1,33 @@
 <?php
+
+require_once 'Classes/Autoloader.php';
+
+use Classes\Auth;
+use Classes\Autoloader;
+use Classes\Database;
+use Classes\Session;
+use Classes\Url;
+
+Autoloader::register();
+Session::start();
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $connection = (new Database())->getDbConnection();
+        if (Auth::authenticate(
+            $connection,
+            $_POST['login'],
+            $_POST['password']
+        )) {
+            Auth::login();
+            Url::redirect('test.php');
+        } else {
+            $error = "Неверные входные данные";
+        }
+    }
+} catch (PDOException $e) {
+    $error = "Произошла ошибка базы данных: " . $e->getCode();
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -52,11 +81,16 @@
     <div class="main__content">
         <div class="login__modal mt6rem">
             <div class="login__header">Вход Homework System</div>
-            <form action="" class="login__form">
-                <input type="text" name="login" id="login" class="login__form-input" placeholder="ID">
-                <input type="password" name="password" id="password" class="login__form-input" placeholder="Пароль">
+            <form action="" class="login__form" method="post">
+                <input type="number" name="login" class="login__form-input" placeholder="ID">
+                <input type="password" name="password" class="login__form-input" placeholder="Пароль">
                 <button type="submit" class="enter__link">Войти</button>
             </form>
+            <?php
+            if (!empty($error)) : ?>
+                <p class="errorMessage"><?= $error ?></p>
+            <?php
+            endif; ?>
         </div>
         <div class="register__modal mt1rem">
             <div class="register__header">Или</div>

@@ -7,7 +7,6 @@ use PDO;
 
 require __DIR__ . '/../vendor/autoload.php';
 Dotenv::createUnsafeImmutable(__DIR__ . '/../')->load();
-
 class Database
 {
     private PDO $dbConnection;

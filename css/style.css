@@ -212,3 +212,10 @@ main{
 .mb6rem{
     margin-bottom: 6rem;
 }
+
+.errorMessage{
+    color: #e64646;
+    font-size: 13px;
+    margin-top: 6px;
+    margin-bottom: 0px;
+}

@@ -10,13 +10,15 @@ use Classes\Users;
 
 Autoloader::register();
 Session::start();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $connection = (new Database())->getDbConnection();
-    Users::create($connection, $_POST);
-    Url::redirect('index.php');
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $connection = (new Database())->getDbConnection();
+        Users::create($connection, $_POST);
+        Url::redirect('index.php');
+    }
+} catch (PDOException $e) {
+    $error = "Произошла ошибка базы данных: " . $e->getCode();
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -47,9 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <header>
-    <div class="header__content">
+    <a href="index.php" class="header__content">
         <img src="images/logo.png" class="header-logo" alt="Homework System logo">
-    </div>
+    </a>
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
@@ -75,6 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <button type="submit" class="register__modal-link">Войти</button>
             </form>
+            <?php
+            if (!empty($error)) : ?>
+                <p class="errorMessage"><?= $error ?></p>
+            <?php
+            endif; ?>
         </div>
         <div class="register__modal mt1rem mb6rem">
             <div class="register__header">Или</div>
