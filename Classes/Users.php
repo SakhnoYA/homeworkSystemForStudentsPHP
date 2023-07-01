@@ -6,15 +6,8 @@ use PDO;
 
 class Users
 {
-//create(ассоциативный массив) - одного пользователь создает
-//update(ассоциативный массив)
-//get(ассоциативный массив)
-//delete(ассоциативный массив)
-//attachCourseToUser(id_user, course_id)
-//getUserCourseList(id)
-//deleteUnconfirmedUsers()
 
-    public static function create($connection, $options = []): string
+    public static function create(PDO $connection, array $options = []): void
     {
         if (!array_key_exists("ip", $options)) {
             if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -26,29 +19,88 @@ class Users
             }
             $options["ip"] = $ip;
         }
+        $options["password"] = password_hash($options["password"], PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO users (" . implode(', ', array_keys($options)) . ")
-        VALUES (:" . implode(', :', array_keys($options)) . ")";
+        $columnsString = implode(', ', array_keys($options));
+        $valuesString = implode(', :', array_keys($options));
+
+        $sql = "INSERT INTO users ($columnsString) VALUES (:$valuesString)";
 
         $stmt = $connection->prepare($sql);
 
-
         foreach ($options as $column => $value) {
-            $stmt->bindValue(':' . $column, $value, PDO::PARAM_STR);
+            $stmt->bindValue(':' . $column, $value);
         }
         $stmt->execute();
-        return $connection->lastInsertId();
-//        $sql = "INSERT INTO users (id, registration_date, first_name, last_name, middle_name, password, type, ip, is_confirmed)
-//                VALUES (1, '2023-06-18', 'John', 'Doe', 'Smith', 'password123', 1, '127.0.0.1', true);";
-//        id                smallint                     not null
-////    registration_date date    default CURRENT_DATE not null,
-//    first_name        varchar(30)                  not null,
-//    last_name         varchar(30)                  not null,
-//    middle_name       varchar(30),
-//    password          varchar(255)                 not null,
-//    type              integer                      not null
-//        references user_types,
-//    ip                varchar(45),
-////    is_confirmed      boolean default false        not null
     }
+
+    public static function get(PDO $connection, array $columnsSELECT = [], array $optionsWHERE = []): array
+    {
+        $columnsString = !empty($columnsSELECT) ? implode(', ', $columnsSELECT) : '*';
+
+        $whereClause = implode(
+            'AND ',
+            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+        );
+
+        $sql = "SELECT ($columnsString) FROM users WHERE ($whereClause)";
+        $stmt = $connection->prepare($sql);
+
+        foreach ($optionsWHERE as $column => $value) {
+            $stmt->bindValue(':' . $column, $value);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function update(PDO $connection, array $optionsSET = [], array $optionsWHERE = []): void
+    {
+        $setClause = implode(
+            ', ',
+            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsSET))
+        );
+        $whereClause = implode(
+            'AND ',
+            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+        );
+
+        $sql = "UPDATE users SET ($setClause) WHERE ($whereClause)";
+        $stmt = $connection->prepare($sql);
+
+        foreach ($optionsSET as $column => $value) {
+            $stmt->bindValue(':' . $column, $value);
+        }
+
+        foreach ($optionsWHERE as $column => $value) {
+            $stmt->bindValue(':' . $column, $value);
+        }
+
+        $stmt->execute();
+    }
+
+    public static function delete(PDO $connection, array $optionsWHERE = []): void
+    {
+        $whereClause = implode(
+            'AND ',
+            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+        );
+
+        $sql = "DELETE FROM users WHERE ($whereClause)";
+        $stmt = $connection->prepare($sql);
+
+        foreach ($optionsWHERE as $column => $value) {
+            $stmt->bindValue(':' . $column, $value);
+        }
+
+        $stmt->execute();
+    }
+
+    public static function deleteUnconfirmedUsers(PDO $connection): void
+    {
+        self::delete($connection, ['is_confirmed' => false]);
+    }
+//    public static function attachCourseToUser(id_user, course_id): void
+//    public static function getUserCourseList(id):void
+
 }

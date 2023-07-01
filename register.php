@@ -1,13 +1,22 @@
 <?php
 
+require_once 'Classes/Autoloader.php';
+
 use Classes\Autoloader;
 use Classes\Database;
 use Classes\Session;
+use Classes\Url;
+use Classes\Users;
 
 Autoloader::register();
 Session::start();
 
-$connection = (new Database())->getDbConnection();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $connection = (new Database())->getDbConnection();
+    Users::create($connection, $_POST);
+    Url::redirect('index.php');
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -46,21 +55,21 @@ $connection = (new Database())->getDbConnection();
     <div class="main__content">
         <div class="login__modal mt6rem">
             <div class="login__header fs18">Регистрация Homework System</div>
-            <form action="" class="login__form" method="post">
-                <input type="text" name="login" id="login" class="login__form-input" placeholder="ID" required>
-                <input type="text" name="login" id="login" class="login__form-input" placeholder="Имя" required>
-                <input type="text" name="login" id="login" class="login__form-input" placeholder="Фамилия" required>
-                <input type="text" name="login" id="login" class="login__form-input" placeholder="Отчество">
+            <form class="login__form" method="post">
+                <input type="number" name="id" class="login__form-input" placeholder="ID" required>
+                <input type="text" name="first_name" class="login__form-input" placeholder="Имя" required>
+                <input type="text" name="last_name" class="login__form-input" placeholder="Фамилия" required>
+                <input type="text" name="middle_name" class="login__form-input" placeholder="Отчество">
                 <input type="password" name="password" id="password" class="login__form-input" placeholder="Пароль"
                        required>
 
                 <div class="radio">
                     <label class="radio-label">
-                        <input type="radio" name="role" required checked value="student">
+                        <input type="radio" name="type" required checked value="2">
                         Ученик
                     </label>
                     <label class="radio-label">
-                        <input type="radio" name="role" required value="teacher">
+                        <input type="radio" name="type" required value="3">
                         Преподаватель
                     </label>
                 </div>
