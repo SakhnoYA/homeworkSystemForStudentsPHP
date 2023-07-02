@@ -268,20 +268,20 @@ main{
 
 .tg .tg-hmp3 {
     background-color: rgb(40, 51, 63);
-    text-align: left;
-    vertical-align: top
+    text-align: center;
+    vertical-align: center
 }
 
 /*noinspection SpellCheckingInspection*/
 .tg .tg-amwm {
     font-weight: bold;
     text-align: center;
-    vertical-align: top
+    vertical-align: center;
 }
 
 .tg .tg-0lax {
-    text-align: left;
-    vertical-align: top
+    text-align: center;
+    vertical-align: center
 }
 
 .header__subcontent{
@@ -319,4 +319,13 @@ border: none;
 
 .fw300{
     font-weight: 300;
+}
+
+.table-button {
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 5px;
+    color: #fff;
+    padding: 4px;
+    background-color: #54a1a0;
 }

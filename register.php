@@ -75,7 +75,7 @@ try {
                         Преподаватель
                     </label>
                 </div>
-                <button type="submit" class="register__modal-link">Войти</button>
+                <button type="submit" class="register__modal-link">Зарегистрироваттся</button>
             </form>
             <?php
             if (!empty($error)) : ?>

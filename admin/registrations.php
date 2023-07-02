@@ -21,26 +21,28 @@ if (!Auth::checkUserType('admin')) {
 //    $error = "Произошла ошибка базы данных: " . $e->getCode();
 //}
 
-//echo "<pre>";
-//print_r($_POST);
-//echo "</pre>";
+$connection = (new Database())->getDbConnection();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['logout'])) {
         Session::destroySession();
         Url::redirect('index.php');
     }
+    if (isset($_POST['confirmation'])) {
+        if ($_POST['confirmation'] === "confirmed") {
+            Users::update($connection, ['is_confirmed' => 1], ['id' => $_POST['id']]);
+        } elseif ($_POST['confirmation'] === "declined") {
+            Users::delete($connection, ['id' => $_POST['id']]);
+        }
+        Url::redirect(substr($_SERVER['PHP_SELF'], 1));
+    }
+    if (isset($_POST['deleteUnconfirmedUsers'])) {
+        Users::deleteUnconfirmedUsers($connection);
+    }
 }
 
-$connection = (new Database())->getDbConnection();
 
-$optionsWHERE = [];
-
-if (isset($_POST['type']) && $_POST['type'] !== '0') {
-    $optionsWHERE['type'] = $_POST['type'];
-}
-
-$users = Users::get($connection, optionsWHERE: $optionsWHERE);
+$users = Users::get($connection, optionsWHERE: ['is_confirmed' => 0]);
 
 ?>
 <!DOCTYPE html>
@@ -76,10 +78,10 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a class="tabs-tab tabs-tab_active">Пользователи</a>
+                <a href="main.php" class="tabs-tab">Пользователи</a>
             </li>
             <li>
-                <a href="registrations.php" class="tabs-tab">Регистрации</a>
+                <a href="" class="tabs-tab tabs-tab_active">Регистрации</a>
             </li>
             <li>
                 <a href="" class="tabs-tab">Создание курса</a>
@@ -94,12 +96,9 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
     </div>
     <div class="header__subcontent">
         <form method="post">
-            <button type="submit"  name="type" value="0" class="header__button-login bd-none fw300 fs17">Все пользователи</button>
-            <button type="submit"  name="type" value="3" class="header__button-login bd-none fw300 fs17">Преподаватели</button>
-            <button type="submit"  name="type" value="2" class="header__button-login bd-none fw300 fs17">Студенты</button>
-        </form>
-        <form action="https://google.com">
-            <button type="submit" class=" header__button-login  fs17"> Создать нового пользователя </button>
+            <button type="submit" name="deleteUnconfirmedUsers" class=" header__button-login  fs17">Удалить всех
+                неподтвежденных пользователей
+            </button>
         </form>
     </div>
 </header>
@@ -113,9 +112,7 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
                 <th class="tg-amwm">Имя</th>
                 <th class="tg-amwm">Фамилия</th>
                 <th class="tg-amwm">Отчество</th>
-                <th class="tg-amwm">Хеш пароля</th>
                 <th class="tg-amwm">Тип пользователя</th>
-                <th class="tg-amwm">Ip</th>
                 <th class="tg-amwm">Подтверждение</th>
             </tr>
             </thead>
@@ -132,10 +129,16 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
                     <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['password'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['type'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['ip'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['is_confirmed'] ? 'Имеется' : 'Отсутствует' ?></td>
+                    <td class="<?= $rowClass ?>">
+                        <form method="post">
+                            <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                            <button class="table-button" name="confirmation" value="confirmed">Подтвердить
+                            </button>
+                            <button class="table-button" name="confirmation" value="declined">Удалить
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             <?php
             endforeach; ?>

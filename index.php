@@ -35,6 +35,8 @@ try {
     }
 } catch (PDOException $e) {
     $error = "Произошла ошибка базы данных: " . $e->getCode();
+} catch (TypeError $typeError){
+    $error = "Произошла ошибка формата данных: " . $typeError->getCode();
 }
 
 ?>

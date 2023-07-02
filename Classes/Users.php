@@ -72,7 +72,7 @@ class Users
             array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
         );
 
-        $sql = "UPDATE users SET ($setClause) WHERE ($whereClause)";
+        $sql = "UPDATE users SET $setClause WHERE ($whereClause)";
         $stmt = $connection->prepare($sql);
 
         foreach ($optionsSET as $column => $value) {
@@ -105,7 +105,7 @@ class Users
 
     public static function deleteUnconfirmedUsers(PDO $connection): void
     {
-        self::delete($connection, ['is_confirmed' => false]);
+        self::delete($connection, ['is_confirmed' => 0]);
     }
 //    public static function attachCourseToUser(id_user, course_id): void
 //    public static function getUserCourseList(id):void
