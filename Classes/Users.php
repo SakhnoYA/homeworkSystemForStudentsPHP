@@ -34,20 +34,27 @@ class Users
         $stmt->execute();
     }
 
-    public static function get(PDO $connection, array $columnsSELECT = [], array $optionsWHERE = []): array
-    {
-        $columnsString = !empty($columnsSELECT) ? implode(', ', $columnsSELECT) : '*';
+    public static function get(
+        PDO $connection,
+        array $columnsSELECT = [],
+        array $optionsWHERE = []
+    ): array {
+        $columnsString = !empty($columnsSELECT) ? '(' . implode(', ', $columnsSELECT) . ')' : '*';
 
-        $whereClause = implode(
-            'AND ',
-            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
-        );
+        if (!empty($optionsWHERE)) {
+            $whereClause = implode(
+                'AND ',
+                array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+            );
+            $sql = "SELECT $columnsString FROM users  WHERE ($whereClause)";
+            $stmt = $connection->prepare($sql);
 
-        $sql = "SELECT ($columnsString) FROM users WHERE ($whereClause)";
-        $stmt = $connection->prepare($sql);
-
-        foreach ($optionsWHERE as $column => $value) {
-            $stmt->bindValue(':' . $column, $value);
+            foreach ($optionsWHERE as $column => $value) {
+                $stmt->bindValue(':' . $column, $value);
+            }
+        } else {
+            $sql = "SELECT $columnsString FROM users";
+            $stmt = $connection->prepare($sql);
         }
 
         $stmt->execute();

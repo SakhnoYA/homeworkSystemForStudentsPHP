@@ -19,15 +19,38 @@ class Auth
         return password_verify($password, $resultPassword);
     }
 
-    public static function login(): void
+    public static function login(PDO $connection, int $id): void
     {
         session_regenerate_id(true);
 
         $_SESSION['is_logged_in'] = true;
+        self::setUserType($connection, $id);
+    }
+
+    private static function setUserType(PDO $connection, int $id): void
+    {
+        $sql = "SELECT user_types.name FROM users
+            JOIN user_types ON users.type = user_types.id
+            WHERE users.id = :id";
+
+        $stmt = $connection->prepare($sql);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $userType = $stmt->fetchColumn();
+
+        $_SESSION['user_type'] = $userType;
     }
 
     public static function isAuthenticated(): bool
     {
         return isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'];
     }
+
+    public static function checkUserType(string $type): bool
+    {
+        return isset($_SESSION['user_type']) && $_SESSION['user_type'] === $type;
+    }
+
+
 }

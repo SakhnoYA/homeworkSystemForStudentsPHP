@@ -5,7 +5,7 @@ namespace Classes;
 
 class Url
 {
-    public static function redirect(string $path): void
+    public static function redirect(string $path, int $seconds = 0): void
     {
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
             $protocol = 'https';
@@ -13,7 +13,13 @@ class Url
             $protocol = 'http';
         }
 
-        header("Location: $protocol://" . $_SERVER['HTTP_HOST'] . "/" . $path);
+        $url = "$protocol://" . $_SERVER['HTTP_HOST'] . "/" . $path;
+
+        if ($seconds > 0) {
+            header("refresh:$seconds;url=$url");
+        } else {
+            header("Location: $url");
+        }
         exit;
     }
 

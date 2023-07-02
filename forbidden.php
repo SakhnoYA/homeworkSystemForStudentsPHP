@@ -2,41 +2,12 @@
 
 require_once 'Classes/Autoloader.php';
 
-use Classes\Auth;
 use Classes\Autoloader;
-use Classes\Database;
 use Classes\Session;
 use Classes\Url;
 
 Autoloader::register();
 Session::start();
-//Session::destroySession();
-echo "<pre>";
-print_r($_SESSION);
-echo "</pre>";
-
-if (Auth::isAuthenticated()){
-    Url::redirect($_SESSION['user_type'] . '/main.php');
-}
-
-try {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $connection = (new Database())->getDbConnection();
-        if (Auth::authenticate(
-            $connection,
-            $_POST['login'],
-            $_POST['password']
-        )) {
-            Auth::login($connection, $_POST['login']);
-            Url::redirect($_SESSION['user_type'] . '/main.php');
-        } else {
-            $error = "Неверные входные данные";
-        }
-    }
-} catch (PDOException $e) {
-    $error = "Произошла ошибка базы данных: " . $e->getCode();
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -67,42 +38,16 @@ try {
 </head>
 <body>
 <header>
-    <div class="header__content">
+    <a href="index.php" class="header__content">
         <img src="images/logo.png" class="header-logo" alt="Homework System logo">
-        <ul class="tabs">
-            <!--            отключить если не вошёл-->
-            <li>
-                <?php
-                if (0) : ?>
-                    <a href="" class="tabs-tab">Административная панель</a>
-                <?php
-                elseif (1): ?>
-                    <a href="" class="tabs-tab">Преподавательская панель</a>
-                <?php
-                endif ?>
-            </li>
-        </ul>
-        <!--            отключить если не вошёл-->
-        <button class="header__button-login">Выйти</button>
-    </div>
+    </a>
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
         <div class="login__modal mt6rem">
-            <div class="login__header">Вход Homework System</div>
-            <form action="" class="login__form" method="post">
-                <input type="number" name="login" class="login__form-input" placeholder="ID">
-                <input type="password" name="password" class="login__form-input" placeholder="Пароль">
-                <button type="submit" class="enter__link">Войти</button>
-            </form>
-            <?php
-            if (!empty($error)) : ?>
-                <p class="errorMessage"><?= $error ?></p>
-            <?php
-            endif; ?>
+            <div class="login__header">Извините, вы не имеете доступа к этой странице.</div>
         </div>
-        <div class="register__modal mt1rem">
-            <div class="register__header">Или</div>
+        <div class="register__modal mt1rem ">
             <a href="/register.php" class="register__modal-link">Зарегистрироваться</a>
         </div>
     </div>
@@ -116,3 +61,5 @@ try {
 
 </body>
 </html>
+<?php
+Url::redirect('',4);
