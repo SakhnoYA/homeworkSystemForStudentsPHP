@@ -7,7 +7,7 @@ use PDO;
 class Users
 {
 
-    public static function create(PDO $connection, array $options = []): void
+    public static function create(PDO $connection, array $options): void
     {
         if (!array_key_exists("ip", $options)) {
             if (!empty($_SERVER['HTTP_CLIENT_IP'])) {

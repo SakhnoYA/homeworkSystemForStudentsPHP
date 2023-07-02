@@ -82,7 +82,7 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
                 <a href="registrations.php" class="tabs-tab">Регистрации</a>
             </li>
             <li>
-                <a href="" class="tabs-tab">Создание курса</a>
+                <a href="createCourse.php" class="tabs-tab">Создание курса</a>
             </li>
             <li>
                 <a href="" class="tabs-tab">Запросы доступа</a>

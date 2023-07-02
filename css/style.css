@@ -51,9 +51,11 @@ body {
     display: flex;
     flex-direction: column;
 }
-main{
+
+main {
     flex: 1 1 0;
 }
+
 .tabs-tab {
     align-items: center;
     font-size: 19px;
@@ -91,11 +93,11 @@ main{
     height: 80px;
 }
 
-.footer-copyright{
+.footer-copyright {
     margin-bottom: 5px;
 }
 
-.login__form{
+.login__form {
     margin-top: 20px;
     display: flex;
     justify-content: center;
@@ -104,7 +106,7 @@ main{
     margin-bottom: 8px;
 }
 
-.main__content{
+.main__content {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -125,29 +127,29 @@ main{
     margin-bottom: 16px;
 }
 
-.login__modal{
+.login__modal {
     width: 25.333333%;
     background-color: #fff;
     border-radius: 12px;
     padding: 32px 24px;
 }
 
-.mt6rem{
+.mt6rem {
     margin-top: 6rem;
 }
 
-.mt1rem{
+.mt1rem {
     margin-top: 1rem;
 }
 
-.register__modal{
+.register__modal {
     width: 25.333333%;
     background-color: #fff;
     border-radius: 12px;
     padding: 18px 24px;
 }
 
-.login__header{
+.login__header {
     font-size: 20px;
     line-height: 24px;
     text-align: center;
@@ -156,7 +158,7 @@ main{
     font-weight: 500;
 }
 
-.enter__link{
+.enter__link {
     font-size: 19px;
     height: 44px;
     font-weight: 500;
@@ -173,7 +175,7 @@ main{
     background-color: #2d81e0;
 }
 
-.register__modal-link{
+.register__modal-link {
     text-decoration: none;
     font-size: 19px;
     height: 44px;
@@ -189,7 +191,8 @@ main{
     width: 100%;
     background-color: #4BB34B;
 }
-.register__header{
+
+.register__header {
     font-size: 20px;
     line-height: 24px;
     text-align: center;
@@ -198,23 +201,23 @@ main{
     font-weight: 500;
 }
 
-.fs18{
+.fs18 {
     font-size: 18px;
 }
 
-.radio{
+.radio {
     margin-bottom: 10px;
 }
 
-.radio-label{
+.radio-label {
     margin-right: 25px;
 }
 
-.mb6rem{
+.mb6rem {
     margin-bottom: 6rem;
 }
 
-.errorMessage{
+.errorMessage {
     color: #e64646;
     font-size: 13px;
     margin-top: 6px;
@@ -226,11 +229,11 @@ main{
     padding: 0 12px;
 }
 
-.tabs-tab_active{
+.tabs-tab_active {
     color: #f33;
 }
 
-.tabs-tab_active:before{
+.tabs-tab_active:before {
     position: absolute;
     bottom: -10px;
     width: 100%;
@@ -238,6 +241,7 @@ main{
     content: "";
     background-color: red;
 }
+
 .tg {
     border-collapse: separate;
     border-spacing: 2px;
@@ -284,7 +288,7 @@ main{
     vertical-align: center
 }
 
-.header__subcontent{
+.header__subcontent {
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -309,15 +313,15 @@ main{
     color: #000;
 }
 
-.fs17{
+.fs17 {
     font-size: 17px;
 }
 
-.bd-none{
-border: none;
+.bd-none {
+    border: none;
 }
 
-.fw300{
+.fw300 {
     font-weight: 300;
 }
 
@@ -328,4 +332,13 @@ border: none;
     color: #fff;
     padding: 4px;
     background-color: #54a1a0;
+}
+
+textarea {
+    resize: none;
+    overflow: hidden;
+}
+
+.h200 {
+    height: 200px;
 }

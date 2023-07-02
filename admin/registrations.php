@@ -84,7 +84,7 @@ $users = Users::get($connection, optionsWHERE: ['is_confirmed' => 0]);
                 <a href="" class="tabs-tab tabs-tab_active">Регистрации</a>
             </li>
             <li>
-                <a href="" class="tabs-tab">Создание курса</a>
+                <a href="createCourse.php" class="tabs-tab">Создание курса</a>
             </li>
             <li>
                 <a href="" class="tabs-tab">Запросы доступа</a>
