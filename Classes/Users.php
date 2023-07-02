@@ -107,7 +107,5 @@ class Users
     {
         self::delete($connection, ['is_confirmed' => 0]);
     }
-//    public static function attachCourseToUser(id_user, course_id): void
-//    public static function getUserCourseList(id):void
 
 }
