@@ -1,0 +1,11 @@
+.env
+plan.txt
+
+vendor/
+
+.idea
+.gitignore
+README.md
+
+.dockerignore
+Dockerfile

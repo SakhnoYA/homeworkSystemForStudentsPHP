@@ -10,10 +10,7 @@ use Classes\Url;
 
 Autoloader::register();
 Session::start();
-//Session::destroySession();
-echo "<pre>";
-print_r($_SESSION);
-echo "</pre>";
+
 
 if (Auth::isAuthenticated()){
     Url::redirect($_SESSION['user_type'] . '/main.php');

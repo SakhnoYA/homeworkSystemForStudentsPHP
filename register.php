@@ -12,9 +12,6 @@ use Classes\Users;
 Autoloader::register();
 Session::start();
 
-//if (Auth::isAuthenticated()){
-//    Url::redirect($_SESSION['user_type'] . '/main.php');
-//}
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
