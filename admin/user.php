@@ -17,28 +17,50 @@ if (!Auth::checkUserType('admin')) {
     Url::redirect('forbidden.php');
 }
 
-$user = null;
 try {
+    $connection = (new Database())->getDbConnection();
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['logout'])) {
             Session::destroySession();
             Url::redirect('index.php');
         }
-//        if (isset($_POST['title'])) {
-//            Courses::create($connection, $_POST);
-//            Url::redirect(substr($_SERVER['PHP_SELF'], 1));
-//        }
-    }
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        if (isset($_GET['id'])) {
-            $connection = (new Database())->getDbConnection();
-            $user = Users::get($connection, ['first_name', 'middle_name', 'last_name', 'type'], ['id' => $_GET['id']]);
+        if (isset($_POST['toDelete'])) {
+            Users::delete($connection, ['id' => $_GET['id']]);
+            Url::redirect('admin/main.php');
         }
+        if (isset($_POST['last_name'])) {
+            Users::update(
+                $connection,
+                array_intersect_key($_POST, array_flip(['first_name', 'middle_name', 'last_name'])),
+                ['id' => $_GET['id']]
+            );
+        }
+        if (isset($_POST['attachCourses'])) {
+            foreach ($_POST['attachCourses'] as $course) {
+                Courses::attachCourseToUser($connection, $_GET['id'], $course,true);
+            }
+        }
+        if (isset($_POST['detachCourses'])) {
+            foreach ($_POST['detachCourses'] as $course) {
+                Courses::detachCourseFromUser($connection, $_GET['id'], $course);
+            }
+        }
+        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
+    }
+    if (isset($_GET['id'])) {
+        $user = Users::getWithJoinUserType(
+            $connection,
+            ['first_name', 'middle_name', 'last_name'],
+            ['id' => $_GET['id']]
+        );
+        $unattachedCourses = Courses::getUnattachedCourses($connection, $_GET['id']);
+        $attachedCourses = Courses::getAttachedCourses($connection, $_GET['id']);
+    } else {
+        die("No Id in query parameter");
     }
 } catch (PDOException $e) {
-    $error = "Произошла ошибка базы данных: " . $e->getCode();
+    $error = "Произошла ошибка базы данных: " . $e->getMessage();
 }
-
 
 ?>
 <!DOCTYPE html>
@@ -80,10 +102,10 @@ try {
                 <a href="registrations.php" class="tabs-tab">Регистрации</a>
             </li>
             <li>
-                <a href="" class="tabs-tab tabs-tab_active">Создание курса</a>
+                <a  class="tabs-tab">Создание курса</a>
             </li>
             <li>
-                <a href="" class="tabs-tab">Запросы доступа</a>
+                <a href="accessRequests.php" class="tabs-tab">Запросы доступа</a>
             </li>
         </ul>
         <form method="post">
@@ -93,22 +115,50 @@ try {
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
-        <div class="login__modal mt6rem">
-            <div class="login__header">Создать курс</div>
-            <p class="login__form-input"> <?= $user['first_name'] . $user['middle_name'] . " " . $user['last_name'] . " " . $user['type'] ?></p>
-            <div class="role"><?= $user['type'] ?></div>
+        <div class="login__modal mt6rem mb6rem">
+            <div class="login__header">Профиль</div>
             <form method="post">
-                <label for="attach_course">Прикрепить к курсу:</label>
-                <select multiple id="attach_course">
-                    <!-- Варианты курсов -->
-                </select>
-
-                <label for="detach_course">Открепить от курса:</label>
-                <select multiple id="detach_course">
-                    <!-- Варианты курсов -->
-                </select>
-
-                <button type="submit">Отправить</button>
+                <label>
+                    Фамилия
+                    <input type="text" name="last_name" class="login__form-input"
+                           value="<?= $user[0]['last_name'] ?>">
+                </label>
+                <label>
+                    Имя
+                    <input type="text" name="first_name" class="login__form-input"
+                           value="<?= $user[0]['first_name'] ?>">
+                </label>
+                <label>
+                    Отчество
+                    <input type="text" name="middle_name" class="login__form-input"
+                           value="<?= $user[0]['middle_name'] ?>">
+                </label>
+                <div class="role">Тип пользователя: <?= $user[0]['readable_name'] ?></div>
+                <div class="dropdown-check-list mt1rem" tabindex="100">
+                    <span class="anchor">Прикрепить к курсу</span>
+                    <ul class="items">
+                        <?php
+                        foreach ($unattachedCourses as $course): ?>
+                            <li><input type="checkbox" name="attachCourses[]"
+                                       value="<?= $course['id'] ?>"/><?= $course['title'] ?></li>
+                        <?php
+                        endforeach; ?>
+                    </ul>
+                </div>
+                <div class="dropdown-check-list mt1rem" tabindex="100">
+                    <span class="anchor">Открепить от курса</span>
+                    <ul class="items">
+                        <?php
+                        foreach ($attachedCourses as $course): ?>
+                            <li><input type="checkbox" name="detachCourses[]"
+                                       value="<?= $course['id'] ?>"/><?= $course['title'] ?></li>
+                        <?php
+                        endforeach; ?>
+                    </ul>
+                </div>
+                <button class="enter__link bg-red mt1rem" name="toDelete">Удалить
+                </button>
+                <button type="submit" class="enter__link mt1rem">Сохранить</button>
             </form>
             <?php
             if (!empty($error)) : ?>
@@ -124,6 +174,6 @@ try {
         <a class="github_link" href="https://github.com/SakhnoYA">Мой гитхаб</a>
     </div>
 </footer>
-
+<script src="/js/script.js"></script>
 </body>
 </html>

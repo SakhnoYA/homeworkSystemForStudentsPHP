@@ -4,10 +4,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Autoloader.php';
 
 use Classes\Auth;
 use Classes\Autoloader;
+use Classes\Courses;
 use Classes\Database;
 use Classes\Session;
 use Classes\Url;
-use Classes\Users;
 
 Autoloader::register();
 Session::start();
@@ -30,20 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (isset($_POST['confirmation'])) {
         if ($_POST['confirmation'] === "confirmed") {
-            Users::update($connection, ['is_confirmed' => 1], ['id' => $_POST['id']]);
+            Courses::confirmUserCourseRelationship($connection, $_POST['user_id'], $_POST['course_id']);
         } elseif ($_POST['confirmation'] === "declined") {
-            Users::delete($connection, ['id' => $_POST['id']]);
+            Courses::deleteUserCourseRelationship($connection, $_POST['user_id'], $_POST['course_id']);
         }
         Url::redirect(substr($_SERVER['PHP_SELF'], 1));
-    }
-    if (isset($_POST['deleteUnconfirmedUsers'])) {
-        Users::deleteUnconfirmedUsers($connection);
     }
 }
 
 
-$users = Users::get($connection, optionsWHERE: ['is_confirmed' => 0]);
-
+$courseRelationships = Courses::getUnconfirmedUserCourseRelationships($connection);
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -81,24 +77,17 @@ $users = Users::get($connection, optionsWHERE: ['is_confirmed' => 0]);
                 <a href="main.php" class="tabs-tab">Пользователи</a>
             </li>
             <li>
-                <a class="tabs-tab tabs-tab_active">Регистрации</a>
+                <a href="registrations.php" class="tabs-tab ">Регистрации</a>
             </li>
             <li>
                 <a href="createCourse.php" class="tabs-tab">Создание курса</a>
             </li>
             <li>
-                <a href="accessRequests.php" class="tabs-tab">Запросы доступа</a>
+                <a class="tabs-tab tabs-tab_active">Запросы доступа</a>
             </li>
         </ul>
         <form method="post">
             <button type="submit" name="logout" class="header__button-login">Выйти</button>
-        </form>
-    </div>
-    <div class="header__subcontent">
-        <form method="post">
-            <button type="submit" name="deleteUnconfirmedUsers" class=" header__button-login  fs17">Удалить всех
-                неподтвежденных пользователей
-            </button>
         </form>
     </div>
 </header>
@@ -108,31 +97,32 @@ $users = Users::get($connection, optionsWHERE: ['is_confirmed' => 0]);
             <thead>
             <tr>
                 <th class="tg-amwm">ID</th>
-                <th class="tg-amwm">Дата регистрации</th>
                 <th class="tg-amwm">Имя</th>
                 <th class="tg-amwm">Фамилия</th>
                 <th class="tg-amwm">Отчество</th>
                 <th class="tg-amwm">Тип пользователя</th>
+                <th class="tg-amwm">Курс</th>
                 <th class="tg-amwm">Подтверждение</th>
             </tr>
             </thead>
             <tbody>
             <?php
             $isOdd = true;
-            foreach ($users as $user):
+            foreach ($courseRelationships as $courseRelationship):
                 $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
                 $isOdd = !$isOdd;
                 ?>
                 <tr>
-                    <td class="<?= $rowClass ?>"><?= $user['id'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['registration_date'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['type'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $courseRelationship['user_id'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $courseRelationship['first_name'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $courseRelationship['last_name'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $courseRelationship['middle_name'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $courseRelationship['readable_name'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $courseRelationship['title'] ?></td>
                     <td class="<?= $rowClass ?>">
                         <form method="post">
-                            <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                            <input type="hidden" name="user_id" value="<?= $courseRelationship['user_id'] ?>">
+                            <input type="hidden" name="course_id" value="<?= $courseRelationship['course_id'] ?>">
                             <button class="table-button" name="confirmation" value="confirmed">Подтвердить
                             </button>
                             <button class="table-button" name="confirmation" value="declined">Удалить

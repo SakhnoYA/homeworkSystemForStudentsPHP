@@ -2,6 +2,7 @@
 
 require_once 'Classes/Autoloader.php';
 
+use Classes\Auth;
 use Classes\Autoloader;
 use Classes\Database;
 use Classes\Session;
@@ -10,6 +11,11 @@ use Classes\Users;
 
 Autoloader::register();
 Session::start();
+
+//if (Auth::isAuthenticated()){
+//    Url::redirect($_SESSION['user_type'] . '/main.php');
+//}
+
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $connection = (new Database())->getDbConnection();
@@ -17,7 +23,7 @@ try {
         Url::redirect('index.php');
     }
 } catch (PDOException $e) {
-    $error = "Произошла ошибка базы данных: " . $e->getCode();
+    $error = "Произошла ошибка базы данных: " . $e->getMessage();
 }
 ?>
 <!DOCTYPE html>
@@ -85,7 +91,7 @@ try {
         </div>
         <div class="register__modal mt1rem mb6rem">
             <div class="register__header">Или</div>
-            <a href="https://google.com" class="enter__link">Войти</a>
+            <a href="index.php" class="enter__link">Войти</a>
         </div>
     </div>
 </main>

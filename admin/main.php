@@ -40,7 +40,7 @@ if (isset($_POST['type']) && $_POST['type'] !== '0') {
     $optionsWHERE['type'] = $_POST['type'];
 }
 
-$users = Users::get($connection, optionsWHERE: $optionsWHERE);
+$users = Users::getWithJoinUserType($connection, optionsWHERE: $optionsWHERE);
 
 ?>
 <!DOCTYPE html>
@@ -85,7 +85,7 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
                 <a href="createCourse.php" class="tabs-tab">Создание курса</a>
             </li>
             <li>
-                <a href="" class="tabs-tab">Запросы доступа</a>
+                <a href="accessRequests.php" class="tabs-tab">Запросы доступа</a>
             </li>
         </ul>
         <form method="post">
@@ -98,9 +98,9 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
             <button type="submit"  name="type" value="3" class="header__button-login bd-none fw300 fs17">Преподаватели</button>
             <button type="submit"  name="type" value="2" class="header__button-login bd-none fw300 fs17">Студенты</button>
         </form>
-        <form action="https://google.com">
+        <a href="createUser.php">
             <button type="submit" class=" header__button-login  fs17"> Создать нового пользователя </button>
-        </form>
+        </a>
     </div>
 </header>
 <main class="dark-grey-background">
@@ -117,6 +117,7 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
                 <th class="tg-amwm">Тип пользователя</th>
                 <th class="tg-amwm">Ip</th>
                 <th class="tg-amwm">Подтверждение</th>
+                <th class="tg-amwm">Профиль</th>
             </tr>
             </thead>
             <tbody>
@@ -133,9 +134,15 @@ $users = Users::get($connection, optionsWHERE: $optionsWHERE);
                     <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['password'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['type'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $user['readable_name'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['ip'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['is_confirmed'] ? 'Имеется' : 'Отсутствует' ?></td>
+                    <td class="<?= $rowClass ?>">
+                        <a href="user.php?id=<?= $user['id'] ?>">
+                            <button class="table-button">Профиль
+                            </button>
+                        </a>
+                    </td>
                 </tr>
             <?php
             endforeach; ?>

@@ -15,15 +15,14 @@ class Database
     {
         $dbHost = $_ENV['DB_HOST'];
         $dbName = $_ENV['DB_NAME'];
+        $dbPort = $_ENV['DB_PORT'];
         $dbUsername = $_ENV['DB_USERNAME'];
         $dbPassword = $_ENV['DB_PASSWORD'];
 
-        $this->dbConnection = new PDO("pgsql:dbname=$dbName;host=$dbHost;port=5433", $dbUsername, $dbPassword);
+        $this->dbConnection = new PDO("pgsql:dbname=$dbName;host=$dbHost;port=$dbPort", $dbUsername, $dbPassword);
     }
 
-    /**
-     * @return PDO
-     */
+
     public function getDbConnection(): PDO
     {
         return $this->dbConnection;

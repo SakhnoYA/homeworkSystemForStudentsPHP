@@ -30,7 +30,7 @@ class Auth
     private static function setUserType(PDO $connection, int $id): void
     {
         $sql = "SELECT user_types.name FROM users
-            JOIN user_types ON users.type = user_types.id
+            JOIN user_types ON users.type = user_types.type_id
             WHERE users.id = :id";
 
         $stmt = $connection->prepare($sql);
