@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-$users = Users::get($connection, optionsWHERE: ['is_confirmed' => 0]);
+$users = Users::getWithJoinUserType($connection, optionsWHERE: ['is_confirmed' => 0]);
 
 ?>
 <!DOCTYPE html>
@@ -113,7 +113,8 @@ $users = Users::get($connection, optionsWHERE: ['is_confirmed' => 0]);
                 <th class="tg-amwm">Фамилия</th>
                 <th class="tg-amwm">Отчество</th>
                 <th class="tg-amwm">Тип пользователя</th>
-                <th class="tg-amwm">Подтверждение</th>
+                <th class="tg-amwm"></th>
+                <th class="tg-amwm"></th>
             </tr>
             </thead>
             <tbody>
@@ -129,16 +130,18 @@ $users = Users::get($connection, optionsWHERE: ['is_confirmed' => 0]);
                     <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['type'] ?></td>
-                    <td class="<?= $rowClass ?>">
-                        <form method="post">
-                            <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                    <td class="<?= $rowClass ?>"><?= $user['readable_name'] ?></td>
+                    <form method="post">
+                        <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                        <td class="<?= $rowClass ?>">
                             <button class="table-button" name="confirmation" value="confirmed">Подтвердить
                             </button>
+                        </td>
+                        <td class="<?= $rowClass ?>">
                             <button class="table-button" name="confirmation" value="declined">Удалить
                             </button>
-                        </form>
-                    </td>
+                        </td>
+                    </form>
                 </tr>
             <?php
             endforeach; ?>

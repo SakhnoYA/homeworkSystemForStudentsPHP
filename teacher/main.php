@@ -12,7 +12,7 @@ use Classes\Url;
 Autoloader::register();
 Session::start();
 
-if (!Auth::checkUserType('admin')) {
+if (!Auth::checkUserType('teacher')) {
     Url::redirect('forbidden.php');
 }
 
@@ -30,16 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (isset($_POST['confirmation'])) {
         if ($_POST['confirmation'] === "confirmed") {
-            Courses::confirmUserCourseRelationship($connection, $_POST['user_id'], $_POST['course_id']);
+            Courses::confirmUserCourseRelationship($connection, $_SESSION['user_id'], $_POST['course_id']);
         } elseif ($_POST['confirmation'] === "declined") {
-            Courses::deleteUserCourseRelationship($connection, $_POST['user_id'], $_POST['course_id']);
+            Courses::deleteUserCourseRelationship($connection, $_SESSION['user_id'], $_POST['course_id']);
         }
         Url::redirect(substr($_SERVER['PHP_SELF'], 1));
     }
 }
 
 
-$courseRelationships = Courses::getUnconfirmedUserCourseRelationships($connection);
+$confirmedAttachedCourses = Courses::getAttachedCourses($connection, $_SESSION['user_id'], true);
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -74,16 +75,10 @@ $courseRelationships = Courses::getUnconfirmedUserCourseRelationships($connectio
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a href="main.php" class="tabs-tab">Пользователи</a>
+                <a href="main.php" class="tabs-tab tabs-tab_active">Курсы</a>
             </li>
             <li>
-                <a href="registrations.php" class="tabs-tab ">Регистрации</a>
-            </li>
-            <li>
-                <a href="createCourse.php" class="tabs-tab">Создание курса</a>
-            </li>
-            <li>
-                <a class="tabs-tab tabs-tab_active">Запросы доступа</a>
+                <a href="/common/accessRequest.php  " class="tabs-tab ">Запросить доступ</a>
             </li>
         </ul>
         <form method="post">
@@ -97,11 +92,8 @@ $courseRelationships = Courses::getUnconfirmedUserCourseRelationships($connectio
             <thead>
             <tr>
                 <th class="tg-amwm">ID</th>
-                <th class="tg-amwm">Имя</th>
-                <th class="tg-amwm">Фамилия</th>
-                <th class="tg-amwm">Отчество</th>
-                <th class="tg-amwm">Тип пользователя</th>
-                <th class="tg-amwm">Курс</th>
+                <th class="tg-amwm">Название</th>
+                <th class="tg-amwm">Описание</th>
                 <th class="tg-amwm"></th>
                 <th class="tg-amwm"></th>
             </tr>
@@ -109,29 +101,28 @@ $courseRelationships = Courses::getUnconfirmedUserCourseRelationships($connectio
             <tbody>
             <?php
             $isOdd = true;
-            foreach ($courseRelationships as $courseRelationship):
+            foreach ($confirmedAttachedCourses as $course):
                 $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
                 $isOdd = !$isOdd;
                 ?>
                 <tr>
-                    <td class="<?= $rowClass ?>"><?= $courseRelationship['user_id'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $courseRelationship['first_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $courseRelationship['last_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $courseRelationship['middle_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $courseRelationship['readable_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $courseRelationship['title'] ?></td>
-                    <form method="post">
-                        <input type="hidden" name="user_id" value="<?= $courseRelationship['user_id'] ?>">
-                        <input type="hidden" name="course_id" value="<?= $courseRelationship['course_id'] ?>">
-                        <td class="<?= $rowClass ?>">
-                            <button class="table-button" name="confirmation" value="confirmed">Подтвердить
+                    <td class="<?= $rowClass ?>"><?= $course['id'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['title'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['description'] ?></td>
+                    <td class="<?= $rowClass ?>">
+                        <form method="post">
+                            <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
+                            <button class="table-button" name="confirmation" value="confirmed">Редактировать
                             </button>
-                        </td>
-                        <td class="<?= $rowClass ?>">
-                            <button class="table-button" name="confirmation" value="declined">Удалить
+                        </form>
+                    </td>
+                    <td class="<?= $rowClass ?>">
+                        <form method="post">
+                            <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
+                            <button class="table-button" name="confirmation" value="confirmed">Просмотр результатов
                             </button>
-                        </td>
-                    </form>
+                        </form>
+                    </td>
                 </tr>
             <?php
             endforeach; ?>

@@ -12,7 +12,7 @@ Autoloader::register();
 Session::start();
 
 
-if (Auth::isAuthenticated()){
+if (Auth::isAuthenticated()) {
     Url::redirect($_SESSION['user_type'] . '/main.php');
 }
 
@@ -24,15 +24,19 @@ try {
             $_POST['login'],
             $_POST['password']
         )) {
-            Auth::login($connection, $_POST['login']);
-            Url::redirect($_SESSION['user_type'] . '/main.php');
+            if (Auth::isConfirmed($connection, $_POST['login'])) {
+                Auth::login($connection, $_POST['login']);
+                Url::redirect($_SESSION['user_type'] . '/main.php');
+            } else {
+                $error = "Ваш профиль не подтвержден администратором";
+            }
         } else {
             $error = "Неверные входные данные";
         }
     }
 } catch (PDOException $e) {
     $error = "Произошла ошибка базы данных: " . $e->getCode();
-} catch (TypeError $typeError){
+} catch (TypeError $typeError) {
     $error = "Произошла ошибка формата данных: " . $typeError->getCode();
 }
 
@@ -68,21 +72,6 @@ try {
 <header>
     <div class="header__content">
         <img src="images/logo.png" class="header-logo" alt="Homework System logo">
-        <ul class="tabs">
-            <!--            отключить если не вошёл-->
-            <li>
-                <?php
-                if (0) : ?>
-                    <a href="" class="tabs-tab">Административная панель</a>
-                <?php
-                elseif (1): ?>
-                    <a href="" class="tabs-tab">Преподавательская панель</a>
-                <?php
-                endif ?>
-            </li>
-        </ul>
-        <!--            отключить если не вошёл-->
-        <button class="header__button-login">Выйти</button>
     </div>
 </header>
 <main class="dark-grey-background">

@@ -32,7 +32,7 @@ class Courses
 
         $stmt->bindValue(':user_id', $id_user);
         $stmt->bindValue(':course_id', $course_id);
-        $stmt->bindValue(':is_confirmed', $is_confirmed);
+        $stmt->bindValue(':is_confirmed', $is_confirmed, PDO::PARAM_BOOL);
 
         $stmt->execute();
     }
@@ -56,20 +56,32 @@ class Courses
         return $connection->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getAttachedCourses(PDO $connection, int $id): array
+    public static function getAttachedCourses(PDO $connection, int $id, ?bool $is_confirmed = null): array
     {
-        $sql = "SELECT courses.id, courses.title FROM user_courses JOIN courses ON courses.id = user_courses.course_id  WHERE user_courses.user_id = :id";
+        $sql = "SELECT courses.id, courses.title,courses.description FROM user_courses JOIN courses ON courses.id = user_courses.course_id  WHERE user_courses.user_id = :id";
+
+        if ($is_confirmed !== null) {
+            $sql .= " AND user_courses.is_confirmed = :is_confirmed";
+        }
 
         $stmt = $connection->prepare($sql);
 
         $stmt->bindValue(':id', $id);
 
+        if ($is_confirmed !== null) {
+            $stmt->bindValue(':is_confirmed', $is_confirmed);
+        }
+
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getUnattachedCourses(PDO $connection, int $user_id): array
-    {
+
+    public
+    static function getUnattachedCourses(
+        PDO $connection,
+        int $user_id
+    ): array {
         $sql = "SELECT courses.id, courses.title
             FROM courses
             WHERE courses.id NOT IN (
@@ -86,15 +98,21 @@ class Courses
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getUnconfirmedUserCourseRelationships(PDO $connection): array
-    {
-        $sql = "SELECT uc.user_id, uc.course_id,  first_name, last_name, middle_name, title, readable_name FROM user_courses uc JOIN courses c ON c.id = uc.course_id JOIN users u ON u.id = uc.user_id JOIN user_types ut ON ut.type_id = u.type WHERE uc.is_confirmed = false";
+    public
+    static function getUnconfirmedUserCourseRelationships(
+        PDO $connection
+    ): array {
+        $sql = "SELECT uc.user_id, uc.course_id,  first_name, last_name, middle_name, title, readable_name FROM user_courses uc JOIN courses c ON c.id = uc.course_id JOIN users u ON u.id = uc.user_id JOIN user_types ut ON ut.type_id = u.type WHERE uc.is_confirmed = FALSE";
 
         return $connection->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function confirmUserCourseRelationship(PDO $connection, int $user_id, int $course_id): void
-    {
+    public
+    static function confirmUserCourseRelationship(
+        PDO $connection,
+        int $user_id,
+        int $course_id
+    ): void {
         $sql = "UPDATE user_courses SET is_confirmed = TRUE WHERE user_id = :user_id AND course_id = :course_id";
 
         $stmt = $connection->prepare($sql);
@@ -105,8 +123,12 @@ class Courses
         $stmt->execute();
     }
 
-    public static function deleteUserCourseRelationship(PDO $connection, int $user_id, int $course_id): void
-    {
+    public
+    static function deleteUserCourseRelationship(
+        PDO $connection,
+        int $user_id,
+        int $course_id
+    ): void {
         $sql = "DELETE FROM user_courses WHERE user_id = :user_id AND course_id = :course_id";
 
         $stmt = $connection->prepare($sql);
@@ -116,6 +138,4 @@ class Courses
 
         $stmt->execute();
     }
-
-
 }
