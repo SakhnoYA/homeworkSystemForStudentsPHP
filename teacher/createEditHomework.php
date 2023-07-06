@@ -41,12 +41,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Homeworks::update(
             $connection,
             array_filter($_POST, static fn($value) => $value !== ''),
-            ['id' => $_SESSION['lastHomeworkID']]
+            ['id' => $_GET['homework_id'] ?? $_SESSION['lastHomeworkID']]
         );
     }
     if (isset($_POST['toCreateTaskToHomework'])) {
-        $_SESSION['ids'][] = Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== ''));
-        unset($_SESSION['form1']);
+        if (isset($_GET['homework_id'])) {
+            Tasks::attachTaskToHomework(
+                $connection,
+                Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== '')),
+                $_GET['homework_id']
+            );
+        } else {
+            $_SESSION['ids'][] = Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== ''));
+            $_SESSION['form1']=[];
+        }
     }
     if (isset($_POST['toUpdateTask'])) {
         Tasks::update(
@@ -57,26 +65,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 //    Url::redirect(substr($_SERVER['PHP_SELF'], 1));
 }
-if (isset($_GET['course_id'])) {
-//        $homework = Homeworks::get(
-//            $connection,
-//            ['title', 'description', 'max_attempts', 'total_marks', 'passing_marks', 'start_date', 'end_date'],
-//            ['id' => $_GET['id']]
-//        );
-//        $unattachedCourses = Courses::getUnattachedCourses($connection, $_GET['id']);
-//        $attachedCourses = Courses::getAttachedCourses($connection, $_GET['id']);
-} else {
+if (!isset($_GET['course_id'])) {
     die("No Id in query parameter");
 }
 
-$attachedTasks = isset($_SESSION['ids']) ? Tasks::getByIds($connection, $_SESSION['ids']) : Tasks::getAttachedTasks(
-    $connection,
-    $_SESSION['lastHomeworkID']
-);
+if (isset($_GET['homework_id'])) {
+    $attachedTasks = Tasks::getAttachedTasks(
+        $connection,
+        $_GET['homework_id']
+    );
+    $homework = Homeworks::get($connection, optionsWHERE: ['id' => $_GET['homework_id']]);
+} else {
+    $attachedTasks = isset($_SESSION['ids']) ? Tasks::getByIds($connection, $_SESSION['ids']) : Tasks::getAttachedTasks(
+        $connection,
+        $_SESSION['lastHomeworkID']
+    );
+}
 
 echo "<pre>";
 print_r($_SESSION);
 echo "</pre>";
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -131,52 +140,59 @@ echo "</pre>";
 <main class="dark-grey-background">
     <div class="main__content">
         <div class="login__modal mt6rem">
-            <div class="login__header"><?= isset($_SESSION['lastHomeworkID']) ? "Изменить" : "Создать" ?> домашнее
+            <div class="login__header"><?= isset($_SESSION['lastHomeworkID']) || isset($homework) ? "Изменить" : "Создать" ?>
+                домашнее
                 задание
             </div>
             <form class="login__form" method="post">
                 <label class="label-input">
                     Название
                     <input type="text" name="title" class="login__form-input mt7px" required
-                           value="<?= $_SESSION['form0']['title'] ?? '' ?>">
+                           value="<?= $homework[0]['title'] ?? $_SESSION['form0']['title'] ?? '' ?>">
                 </label>
                 <label class="label-input">
                     Максимальное число попыток
                     <input type="number" name="max_attempts" class="login__form-input mt7px"
-                           value="<?= $_SESSION['form0']['max_attempts'] ?? '' ?>">
+                           value="<?= $homework[0]['max_attempts'] ?? $_SESSION['form0']['max_attempts'] ?? '' ?>">
                 </label>
                 <label class="label-input">
                     Баллы
                     <input type="number" name="total_marks" class="login__form-input mt7px"
-                           value="<?= $_SESSION['form0']['total_marks'] ?? '' ?>">
+                           value="<?= $homework[0]['total_marks'] ?? $_SESSION['form0']['total_marks'] ?? '' ?>">
                 </label>
                 <label class="label-input">
                     Проходные баллы
                     <input type="number" name="passing_marks" class="login__form-input mt7px"
-                           value="<?= $_SESSION['form0']['passing_marks'] ?? '' ?>">
+                           value="<?= $homework[0]['passing_marks'] ?? $_SESSION['form0']['passing_marks'] ?? '' ?>">
                 </label>
                 <label class="label-input">
                     Дата начала
                     <input type="date" name="start_date" class="login__form-input mt7px"
-                           value="<?= $_SESSION['form0']['start_date'] ?? date('Y-m-d') ?>">
+                           value="<?= $homework[0]['start_date'] ?? $_SESSION['form0']['start_date'] ?? date(
+                               'Y-m-d'
+                           ) ?>">
                 </label>
                 <label class="label-input">
                     Дата конца
                     <input type="date" name="end_date" class="login__form-input mt7px"
-                           value="<?= $_SESSION['form0']['end_date'] ?? '' ?>">
+                           value="<?= $homework[0]['end_date'] ?? $_SESSION['form0']['end_date'] ?? '' ?>">
                 </label>
 
                 <label class="label-input">
                     Описание
                     <textarea name="description" class="login__form-input h200 mt7px" maxlength="50"
-                    ><?= $_SESSION['form0']['description'] ?? '' ?></textarea>
+                    ><?= $homework[0]['description'] ?? $_SESSION['form0']['description'] ?? '' ?></textarea>
                 </label>
                 <input type="hidden" name="updated_by" value="<?= $_SESSION['user_id'] ?>">
-                <input type="hidden" name="created_by" value="<?= $_SESSION['user_id'] ?>">
+                <?php
+                if (!(isset($_SESSION['lastHomeworkID']) || isset($homework))):?>
+                    <input type="hidden" name="created_by" value=" <?= $_SESSION['user_id'] ?>">
+                <?php
+                endif ?>
                 <button type="submit"
-                        name="<?= isset($_SESSION['lastHomeworkID']) ? "toUpdateHomework" : "toCreateHomework" ?>"
+                        name="<?= isset($_SESSION['lastHomeworkID']) || isset($homework) ? "toUpdateHomework" : "toCreateHomework" ?>"
                         class="enter__link">
-                    <?= isset($_SESSION['lastHomeworkID']) ? "Сохранить" : "Создать" ?>
+                    <?= isset($_SESSION['lastHomeworkID']) || isset($homework) ? "Сохранить" : "Создать" ?>
                 </button>
             </form>
             <?php
@@ -291,12 +307,12 @@ echo "</pre>";
                     </label> <label class="label-input">
                         Описание
                         <textarea name="description" class="login__form-input h50 mt7px" maxlength="50"
-                                  ><?= $task['description'] ?></textarea>
+                        ><?= $task['description'] ?></textarea>
                     </label>
                     <label>
                         Количество баллов
                         <input type="number" name="max_score" class="login__form-input mt7px"
-                                value="<?= $task['max_score'] ?>">
+                               value="<?= $task['max_score'] ?>">
                     </label>
                     <input type="hidden" name="updated_by" value="<?= $_SESSION['user_id'] ?>">
                     <input type="hidden" name="updated_at" value="<?php

@@ -88,61 +88,55 @@ $confirmedAttachedCourses = Courses::getAttachedCourses($connection, $_SESSION['
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
-        <table class="tg">
-            <thead>
-            <tr>
-                <th class="tg-amwm">ID</th>
-                <th class="tg-amwm">Название</th>
-                <th class="tg-amwm">Описание</th>
-                <th class="tg-amwm">Дата начала</th>
-                <th class="tg-amwm">Дата конца</th>
-                <th class="tg-amwm">Уровень сложности</th>
-                <th class="tg-amwm">Категория</th>
-                <th class="tg-amwm">Доступность</th>
-                <th class="tg-amwm">Дата создания</th>
-                <th class="tg-amwm">Дата обновления</th>
-                <th class="tg-amwm">Обновил ID</th>
-                <th class="tg-amwm"></th>
-                <th class="tg-amwm"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            $isOdd = true;
-            foreach ($confirmedAttachedCourses as $course):
-                $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
-                $isOdd = !$isOdd;
-                ?>
+        <div class="login__modal mt6rem mb6rem width-auto dark-slay-gray padding-20-20 ">
+            <table class="tg">
+                <thead>
                 <tr>
-                    <td class="<?= $rowClass ?>"><?= $course['id'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['title'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['description'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['start_date'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['end_date'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['difficulty_level'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['category'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['availability'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['created_at'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['updated_at'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $course['updated_by'] ?></td>
-                    <td class="<?= $rowClass ?>">
-                        <a href="course.php?id=<?= $course['id'] ?>">
-                            <button class="table-button">Редактировать
-                            </button>
-                        </a>
-                    </td>
-                    <td class="<?= $rowClass ?>">
-                        <form method="post">
-                            <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
-                            <button class="table-button" name="confirmation" value="confirmed">Просмотр результатов
-                            </button>
-                        </form>
-                    </td>
+                    <th class="tg-amwm">ID</th>
+                    <th class="tg-amwm">Название</th>
+                    <th class="tg-amwm">Описание</th>
+                    <th class="tg-amwm">Дата начала</th>
+                    <th class="tg-amwm">Дата конца</th>
+                    <th class="tg-amwm">Уровень сложности</th>
+                    <th class="tg-amwm">Категория</th>
+                    <th class="tg-amwm">Доступность</th>
+                    <th class="tg-amwm">Дата создания</th>
+                    <th class="tg-amwm">Дата обновления</th>
+                    <th class="tg-amwm">Обновил ID</th>
+                    <th class="tg-amwm"></th>
                 </tr>
-            <?php
-            endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <?php
+                $isOdd = true;
+                foreach ($confirmedAttachedCourses as $course):
+                    $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
+                    $isOdd = !$isOdd;
+                    ?>
+                    <tr>
+                        <td class="<?= $rowClass ?>"><?= $course['id'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['title'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['description'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['start_date'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['end_date'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['difficulty_level'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['category'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['availability'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['created_at'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['updated_at'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $course['updated_by'] ?></td>
+                        <td class="<?= $rowClass ?>">
+                            <a href="course.php?id=<?= $course['id'] ?>">
+                                <button class="table-button">Редактировать
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                <?php
+                endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 <footer>

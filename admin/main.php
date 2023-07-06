@@ -105,7 +105,7 @@ $users = Users::getWithJoinUserType($connection, optionsWHERE: $optionsWHERE);
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
-        <div class="login__modal mt6rem ">
+        <div class="login__modal mt6rem mb6rem width-auto dark-slay-gray padding-20-20 ">
         <table class="tg">
             <thead>
             <tr>

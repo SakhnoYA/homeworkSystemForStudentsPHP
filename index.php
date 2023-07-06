@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Classes/Autoloader.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Autoloader.php';
 
 use Classes\Auth;
 use Classes\Autoloader;
@@ -91,7 +91,7 @@ try {
         </div>
         <div class="register__modal mt1rem">
             <div class="register__header">Или</div>
-            <a href="/register.php" class="register__modal-link">Зарегистрироваться</a>
+            <a href="/basic/register.php" class="register__modal-link">Зарегистрироваться</a>
         </div>
     </div>
 </main>

@@ -3,6 +3,7 @@
 namespace Classes;
 
 use PDO;
+
 class Homeworks
 {
     public static function create(PDO $connection, array $options): int
@@ -23,6 +24,7 @@ class Homeworks
         echo "</pre>";
         return (int)$connection->query("SELECT last_value FROM homework_id_seq")->fetchColumn();
     }
+
     public static function attachHomeworkToCourse(
         PDO $connection,
         int $homework_id,
@@ -59,10 +61,47 @@ class Homeworks
         foreach ($optionsWHERE as $column => $value) {
             $stmt->bindValue(':' . $column, $value);
         }
-        echo $sql;
-        echo "<pre>";
-        print_r($optionsSET);
-        echo "</pre>";
+
         $stmt->execute();
+    }
+
+    public static function getAttachedHomeworks(PDO $connection, int $id): array
+    {
+        $sql = "SELECT * FROM course_homeworks JOIN homeworks ON homeworks.id = course_homeworks.homework_id WHERE course_homeworks.course_id = :id";
+
+        $stmt = $connection->prepare($sql);
+
+        $stmt->bindValue(':id', $id);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function get(
+        PDO $connection,
+        array $columnsSELECT = [],
+        array $optionsWHERE = []
+    ): array {
+        $columnsString = !empty($columnsSELECT) ? implode(', ', $columnsSELECT) : '*';
+
+        if (!empty($optionsWHERE)) {
+            $whereClause = implode(
+                'AND ',
+                array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+            );
+            $sql = "SELECT $columnsString FROM homeworks WHERE ($whereClause)";
+            $stmt = $connection->prepare($sql);
+
+            foreach ($optionsWHERE as $column => $value) {
+                $stmt->bindValue(':' . $column, $value);
+            }
+        } else {
+            $sql = "SELECT $columnsString FROM homeworks";
+            $stmt = $connection->prepare($sql);
+        }
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

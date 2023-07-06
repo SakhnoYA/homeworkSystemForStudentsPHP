@@ -47,8 +47,8 @@ class Courses
 
     public static function attachCourseToUser(
         PDO $connection,
-        int $course_id,
         int $user_id,
+        int $course_id,
         bool $is_confirmed = false
     ): void {
         $sql = "INSERT INTO user_courses (user_id, course_id, is_confirmed) VALUES (:user_id, :course_id, :is_confirmed)";

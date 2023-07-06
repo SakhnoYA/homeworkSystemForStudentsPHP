@@ -19,7 +19,7 @@ if (!(Auth::checkUserType('teacher') || Auth::checkUserType('student'))) {
 try {
     $connection = (new Database())->getDbConnection();
     $unattachedCourses = Courses::getUnattachedCourses($connection, $_SESSION['user_id']);
-    $attachedCourses = Courses::getAttachedCourses($connection, $_SESSION['user_id'], );
+    $attachedCourses = Courses::getAttachedCourses($connection, $_SESSION['user_id'],);
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['logout'])) {
             Session::destroySession();
@@ -40,6 +40,7 @@ try {
 } catch (PDOException $e) {
     $error = "Произошла ошибка базы данных: " . $e->getMessage();
 }
+
 
 ?>
 <!DOCTYPE html>
@@ -95,7 +96,7 @@ try {
     <div class="main__content">
         <div class="login__modal mt6rem mb6rem">
             <div class="login__header fs18">Запрос</div>
-            <form class="login__form" method="post">
+            <form class="login__form accessRequestForm" method="post">
                 <div class="dropdown-check-list" tabindex="100">
                     <span class="anchor">Прикрепить к курсу</span>
                     <ul class="items">

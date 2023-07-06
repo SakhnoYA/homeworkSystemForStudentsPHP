@@ -18,7 +18,7 @@ function collectAllFormData(forms) {
     })
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/common/test.php', true);
+    xhr.open('POST', '/common/saveFormsData.php', true);
 
     xhr.send(formDatas); // Отправляем данные без обертки
 

@@ -93,6 +93,7 @@ $courseRelationships = Courses::getUnconfirmedUserCourseRelationships($connectio
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
+        <div class="login__modal mt6rem mb6rem width-auto dark-slay-gray padding-20-20 ">
         <table class="tg">
             <thead>
             <tr>
@@ -137,6 +138,7 @@ $courseRelationships = Courses::getUnconfirmedUserCourseRelationships($connectio
             endforeach; ?>
             </tbody>
         </table>
+    </div>
     </div>
 </main>
 <footer>

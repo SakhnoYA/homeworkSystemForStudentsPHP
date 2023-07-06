@@ -104,49 +104,51 @@ $users = Users::getWithJoinUserType($connection, optionsWHERE: ['is_confirmed' =
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
-        <table class="tg">
-            <thead>
-            <tr>
-                <th class="tg-amwm">ID</th>
-                <th class="tg-amwm">Дата регистрации</th>
-                <th class="tg-amwm">Имя</th>
-                <th class="tg-amwm">Фамилия</th>
-                <th class="tg-amwm">Отчество</th>
-                <th class="tg-amwm">Тип пользователя</th>
-                <th class="tg-amwm"></th>
-                <th class="tg-amwm"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            $isOdd = true;
-            foreach ($users as $user):
-                $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
-                $isOdd = !$isOdd;
-                ?>
+        <div class="login__modal mt6rem mb6rem width-auto dark-slay-gray padding-20-20 ">
+            <table class="tg">
+                <thead>
                 <tr>
-                    <td class="<?= $rowClass ?>"><?= $user['id'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['registration_date'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['readable_name'] ?></td>
-                    <form method="post">
-                        <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                        <td class="<?= $rowClass ?>">
-                            <button class="table-button" name="confirmation" value="confirmed">Подтвердить
-                            </button>
-                        </td>
-                        <td class="<?= $rowClass ?>">
-                            <button class="table-button" name="confirmation" value="declined">Удалить
-                            </button>
-                        </td>
-                    </form>
+                    <th class="tg-amwm">ID</th>
+                    <th class="tg-amwm">Дата регистрации</th>
+                    <th class="tg-amwm">Имя</th>
+                    <th class="tg-amwm">Фамилия</th>
+                    <th class="tg-amwm">Отчество</th>
+                    <th class="tg-amwm">Тип пользователя</th>
+                    <th class="tg-amwm"></th>
+                    <th class="tg-amwm"></th>
                 </tr>
-            <?php
-            endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <?php
+                $isOdd = true;
+                foreach ($users as $user):
+                    $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
+                    $isOdd = !$isOdd;
+                    ?>
+                    <tr>
+                        <td class="<?= $rowClass ?>"><?= $user['id'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['registration_date'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['readable_name'] ?></td>
+                        <form method="post">
+                            <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                            <td class="<?= $rowClass ?>">
+                                <button class="table-button" name="confirmation" value="confirmed">Подтвердить
+                                </button>
+                            </td>
+                            <td class="<?= $rowClass ?>">
+                                <button class="table-button" name="confirmation" value="declined">Удалить
+                                </button>
+                            </td>
+                        </form>
+                    </tr>
+                <?php
+                endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 <footer>

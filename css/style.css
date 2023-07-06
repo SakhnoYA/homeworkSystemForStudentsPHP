@@ -475,3 +475,18 @@ textarea {
 .width-auto{
     width: auto;
 }
+
+.dark-slay-gray{
+    background-color: darkslategrey;
+}
+
+.padding-20-20{
+    padding: 20px 20px;
+}
+
+.accessRequestForm{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}

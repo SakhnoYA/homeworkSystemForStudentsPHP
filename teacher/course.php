@@ -6,6 +6,7 @@ use Classes\Auth;
 use Classes\Autoloader;
 use Classes\Courses;
 use Classes\Database;
+use Classes\Homeworks;
 use Classes\Session;
 use Classes\Url;
 
@@ -17,46 +18,51 @@ if (!Auth::checkUserType('teacher')) {
 }
 
 //try {
-    $connection = (new Database())->getDbConnection();
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['logout'])) {
-            Session::destroySession();
-            Url::redirect('index.php');
-        }
-        if (isset($_POST['createHomework'])) {
-            $_SESSION['ids'] = [];
-            Url::redirect('teacher/createHomework.php', queryString: "course_id=" . $_GET['id']);
-        }
-        if (isset($_POST['title'])) {
-            echo 'dsf';
-            $connection = (new Database())->getDbConnection();
-            Courses::update(
-                $connection,
-                array_filter($_POST, static fn($value) => $value !== ''),
-//                array_intersect_key($_POST, array_flip(['first_name', 'middle_name', 'last_name'])),
-                ['id' => $_GET['id']]
-            );
-        }
-//        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
+$connection = (new Database())->getDbConnection();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['logout'])) {
+        Session::destroySession();
+        Url::redirect('index.php');
     }
-    if (isset($_GET['id'])) {
-        $course = Courses::get(
+    if (isset($_POST['toCreateHomework'])) {
+        $_SESSION['ids'] = [];
+        Url::redirect('teacher/createEditHomework.php', queryString: "course_id=" . $_GET['id']);
+    }
+    if (isset($_POST['toUpdateHomework'])) {
+        $_SESSION['ids'] = [];
+        unset($_SESSION['lastHomeworkID']);
+        Url::redirect(
+            'teacher/createEditHomework.php',
+            queryString: "course_id=" . $_GET['id'] . "&homework_id=" . $_POST['homework_id']
+        );
+    }
+    if (isset($_POST['title'])) {
+        $connection = (new Database())->getDbConnection();
+        Courses::update(
             $connection,
-            ['title', 'description', 'start_date', 'end_date', 'difficulty_level', 'category', 'availability'],
+            array_filter($_POST, static fn($value) => $value !== ''),
+//                array_intersect_key($_POST, array_flip(['first_name', 'middle_name', 'last_name'])),
             ['id' => $_GET['id']]
         );
-//        $unattachedCourses = Courses::getUnattachedCourses($connection, $_GET['id']);
-//        $attachedCourses = Courses::getAttachedCourses($connection, $_GET['id']);
-    } else {
-        die("No Id in query parameter");
     }
+//        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
+}
+if (isset($_GET['id'])) {
+    $homework = Courses::get(
+        $connection,
+        ['title', 'description', 'start_date', 'end_date', 'difficulty_level', 'category', 'availability'],
+        ['id' => $_GET['id']]
+    );
+    $attachedHomeworks = Homeworks::getAttachedHomeworks($connection, $_GET['id']);
+} else {
+    die("No Id in query parameter");
+}
 //} catch (PDOException $e) {
 //    $error = "Произошла ошибка базы данных: " . $e->getCode();
 //}
-
-//echo "<pre>";
-//print_r($course);
-//echo "</pre>";
+echo "<pre>";
+print_r($_SESSION);
+echo "</pre>";
 
 ?>
 <!DOCTYPE html>
@@ -111,60 +117,60 @@ if (!Auth::checkUserType('teacher')) {
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
-        <div class="login__modal mt6rem width-auto mb6rem">
+        <div class="login__modal mt6rem">
             <div class="login__header">Курс</div>
             <form method="post">
                 <label>
                     Название
                     <input type="text" name="title" class="login__form-input mt7px"
-                           value="<?= $course[0]['title'] ?>">
+                           value="<?= $homework[0]['title'] ?>">
                 </label>
                 <label>
                     Дата начала
                     <input type="date" name="start_date" class="login__form-input mt7px"
-                           value="<?= $course[0]['start_date'] ?>">
+                           value="<?= $homework[0]['start_date'] ?>">
                 </label>
                 <label>
                     Дата конца
                     <input type="date" name="end_date" class="login__form-input mt7px"
-                           value="<?= $course[0]['end_date'] ?>">
+                           value="<?= $homework[0]['end_date'] ?>">
                 </label>
                 <label class="label-input mb16px">
                     <input type="checkbox" name="availability"
-                           checked="<?= $course[0]['availability'] ? 'checked' : '' ?>"/>
+                           checked="<?= $homework[0]['availability'] ? 'checked' : '' ?>"/>
                     Доступен
                 </label>
                 <label class="label-input "> Категория <select name="category" class="login__form-input mt7px">
-                        <option <?= $course[0]['category'] === null ? 'selected' : '' ?> ></option>
-                        <option <?= $course[0]['category'] === 'natural' ? 'selected' : '' ?>
+                        <option <?= $homework[0]['category'] === null ? 'selected' : '' ?> ></option>
+                        <option <?= $homework[0]['category'] === 'natural' ? 'selected' : '' ?>
                                 value="natural">Естественные науки
                         </option>
-                        <option <?= $course[0]['category'] === 'exact' ? 'selected' : '' ?>
+                        <option <?= $homework[0]['category'] === 'exact' ? 'selected' : '' ?>
                                 value="exact">Точные науки
                         </option>
-                        <option <?= $course[0]['category'] === 'technical' ? 'selected' : '' ?>
+                        <option <?= $homework[0]['category'] === 'technical' ? 'selected' : '' ?>
                                 value="technical">Технические науки
                         </option>
-                        <option <?= $course[0]['category'] === 'socialHumanities' ? 'selected' : '' ?>
+                        <option <?= $homework[0]['category'] === 'socialHumanities' ? 'selected' : '' ?>
                                 value="socialHumanities">Социально-гуманитарные науки
                         </option>
                     </select></label>
                 <label class="label-input"> Сложность <select name="difficulty_level" class="login__form-input mt7px">
-                        <option <?= $course[0]['difficulty_level'] === null ? 'selected' : '' ?>></option>
-                        <option <?= $course[0]['difficulty_level'] === 'easy' ? 'selected' : '' ?>
+                        <option <?= $homework[0]['difficulty_level'] === null ? 'selected' : '' ?>></option>
+                        <option <?= $homework[0]['difficulty_level'] === 'easy' ? 'selected' : '' ?>
                                 value="easy">Легкий уровень
                         </option>
-                        <option <?= $course[0]['difficulty_level'] === 'medium' ? 'selected' : '' ?>
+                        <option <?= $homework[0]['difficulty_level'] === 'medium' ? 'selected' : '' ?>
                                 value="medium">Средний уровень
                         </option>
-                        <option <?= $course[0]['difficulty_level'] === 'hard' ? 'selected' : '' ?>
+                        <option <?= $homework[0]['difficulty_level'] === 'hard' ? 'selected' : '' ?>
                                 value="hard">Сложный уровень
                         </option>
                     </select></label>
                 <label class="label-input">
                     Описание
                     <textarea name="description" class="login__form-input h200 mt7px" maxlength="50"
-                    ><?= $course[0]['description'] ?></textarea>
+                    ><?= $homework[0]['description'] ?></textarea>
                 </label>
                 <input type="hidden" name="updated_by" value="<?= $_SESSION['user_id'] ?>">
                 <input type="hidden" name="updated_at" value="<?php
@@ -179,9 +185,69 @@ if (!Auth::checkUserType('teacher')) {
         </div>
         <div class="register__modal mt1rem mb6rem">
             <form method="post" class="mb0">
-                <button type="submit" name="createHomework" class="register__modal-link">Создать домашнее задание
+                <button type="submit" name="toCreateHomework" class="register__modal-link">Создать домашнее задание
                 </button>
             </form>
+        </div>
+        <div class="login__modal  mb6rem width-auto dark-slay-gray padding-20-20 ">
+            <table class="tg">
+                <thead>
+                <tr>
+                    <th class="tg-amwm">ID</th>
+                    <th class="tg-amwm">Название</th>
+                    <th class="tg-amwm">Описание</th>
+                    <th class="tg-amwm">Всего попыток</th>
+                    <th class="tg-amwm">Всего баллов</th>
+                    <th class="tg-amwm">Проходные баллы</th>
+                    <th class="tg-amwm">Дата начала</th>
+                    <th class="tg-amwm">Дата конца</th>
+                    <th class="tg-amwm">Дата создания</th>
+                    <th class="tg-amwm">Дата обновления</th>
+                    <th class="tg-amwm">Создал ID</th>
+                    <th class="tg-amwm">Обновил ID</th>
+                    <th class="tg-amwm"></th>
+                    <th class="tg-amwm"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $isOdd = true;
+                foreach ($attachedHomeworks as $homework):
+                    $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
+                    $isOdd = !$isOdd;
+                    ?>
+                    <tr>
+                        <td class="<?= $rowClass ?>"><?= $homework['id'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['title'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['description'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['max_attempts'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['total_marks'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['passing_marks'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['start_date'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['end_date'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['created_at'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['updated_at'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['created_at'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['updated_by'] ?></td>
+                        <td class="<?= $rowClass ?>">
+                            <form method="post">
+                                <input type="hidden" name="homework_id" value="<?= $homework['id'] ?>">
+                                <button class="table-button" name="toUpdateHomework">Редактировать
+                                </button>
+                            </form>
+                        </td>
+                        <td class="<?= $rowClass ?>">
+                            <form method="post">
+                                <input type="hidden" name="course_id" value="<?= $homework['id'] ?>">
+                                <button class="table-button" name="confirmation" value="confirmed">Просмотр результатов
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php
+                endforeach; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </main>
