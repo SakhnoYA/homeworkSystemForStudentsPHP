@@ -46,7 +46,7 @@ class Users
                 'AND ',
                 array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
             );
-            $sql = "SELECT $columnsString FROM users  WHERE ($whereClause)";
+            $sql = "SELECT $columnsString FROM users WHERE ($whereClause)";
             $stmt = $connection->prepare($sql);
 
             foreach ($optionsWHERE as $column => $value) {

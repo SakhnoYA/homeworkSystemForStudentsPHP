@@ -19,7 +19,7 @@ if (!Auth::checkUserType('admin')) {
 
 try {
     $connection = (new Database())->getDbConnection();
-    $courses = Courses::getCourses($connection);
+    $courses = Courses::get($connection, ['id', 'title']);
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_POST['logout'])) {
             Session::destroySession();

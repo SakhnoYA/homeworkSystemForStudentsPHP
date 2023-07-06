@@ -94,6 +94,14 @@ $confirmedAttachedCourses = Courses::getAttachedCourses($connection, $_SESSION['
                 <th class="tg-amwm">ID</th>
                 <th class="tg-amwm">Название</th>
                 <th class="tg-amwm">Описание</th>
+                <th class="tg-amwm">Дата начала</th>
+                <th class="tg-amwm">Дата конца</th>
+                <th class="tg-amwm">Уровень сложности</th>
+                <th class="tg-amwm">Категория</th>
+                <th class="tg-amwm">Доступность</th>
+                <th class="tg-amwm">Дата создания</th>
+                <th class="tg-amwm">Дата обновления</th>
+                <th class="tg-amwm">Обновил ID</th>
                 <th class="tg-amwm"></th>
                 <th class="tg-amwm"></th>
             </tr>
@@ -109,12 +117,19 @@ $confirmedAttachedCourses = Courses::getAttachedCourses($connection, $_SESSION['
                     <td class="<?= $rowClass ?>"><?= $course['id'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $course['title'] ?></td>
                     <td class="<?= $rowClass ?>"><?= $course['description'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['start_date'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['end_date'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['difficulty_level'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['category'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['availability'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['created_at'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['updated_at'] ?></td>
+                    <td class="<?= $rowClass ?>"><?= $course['updated_by'] ?></td>
                     <td class="<?= $rowClass ?>">
-                        <form method="post">
-                            <input type="hidden" name="course_id" value="<?= $course['id'] ?>">
-                            <button class="table-button" name="confirmation" value="confirmed">Редактировать
+                        <a href="course.php?id=<?= $course['id'] ?>">
+                            <button class="table-button">Редактировать
                             </button>
-                        </form>
+                        </a>
                     </td>
                     <td class="<?= $rowClass ?>">
                         <form method="post">

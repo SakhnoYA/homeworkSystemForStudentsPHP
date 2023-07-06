@@ -105,6 +105,7 @@ $users = Users::getWithJoinUserType($connection, optionsWHERE: $optionsWHERE);
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
+        <div class="login__modal mt6rem ">
         <table class="tg">
             <thead>
             <tr>
@@ -148,6 +149,7 @@ $users = Users::getWithJoinUserType($connection, optionsWHERE: $optionsWHERE);
             endforeach; ?>
             </tbody>
         </table>
+    </div>
     </div>
 </main>
 <footer>

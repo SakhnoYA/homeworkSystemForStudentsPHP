@@ -99,10 +99,10 @@ main {
 
 .login__form {
     margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*flex-direction: column;*/
+    /*align-items: center;*/
     margin-bottom: 8px;
 }
 
@@ -142,6 +142,10 @@ main {
     margin-top: 1rem;
 }
 
+.mt7px {
+    margin-top: 7px;
+}
+
 .register__modal {
     width: 25.333333%;
     background-color: #fff;
@@ -156,6 +160,7 @@ main {
     margin-top: 16px;
     margin-bottom: 20px;
     font-weight: 500;
+    margin-right: 5px;
 }
 
 .enter__link {
@@ -216,6 +221,7 @@ main {
 .mb6rem {
     margin-bottom: 6rem;
 }
+
 .mb1rem {
     margin-bottom: 1rem;
 }
@@ -346,6 +352,10 @@ textarea {
     height: 200px;
 }
 
+.h50 {
+    height: 50px;
+}
+
 
 .dropdown-check-list {
     display: inline-block;
@@ -398,6 +408,70 @@ textarea {
     background-color: white;
 }
 
-.bg-red{
+.bg-red {
     background-color: red;
+}
+
+.label-input {
+    /*width: 100%;*/
+    display: block;
+}
+
+
+.mb16px {
+    margin-bottom: 16px;
+}
+
+.mb0 {
+    margin-bottom: 0;
+}
+
+.w40p {
+    width: 40%;
+}
+
+.mt4rem {
+    margin-top: 4rem;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+    /*border-bottom: 1px dotted black; !* If you want dots under the hoverable text *!*/
+}
+
+/* Tooltip text */
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 400px;
+    background-color: black;
+    color: #fff;
+    padding: 5px 5px;
+    border-radius: 6px;
+    text-align: left;
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    font-size: 13px;
+    top: -10px;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+}
+
+.divwithtooltip {
+    display: flex;
+    align-items: baseline;
+    justify-content: left;
+}
+
+.mb4rem{
+    margin-bottom: 4rem;
+}
+
+.width-auto{
+    width: auto;
 }

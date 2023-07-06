@@ -17,7 +17,7 @@ if (Auth::isAuthenticated()) {
 }
 
 try {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['toEnter'])) {
         $connection = (new Database())->getDbConnection();
         if (Auth::authenticate(
             $connection,
@@ -81,7 +81,7 @@ try {
             <form action="" class="login__form" method="post">
                 <input type="number" name="login" class="login__form-input" placeholder="ID">
                 <input type="password" name="password" class="login__form-input" placeholder="Пароль">
-                <button type="submit" class="enter__link">Войти</button>
+                <button type="submit" name="toEnter" class="enter__link">Войти</button>
             </form>
             <?php
             if (!empty($error)) : ?>

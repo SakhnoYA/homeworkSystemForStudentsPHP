@@ -20,17 +20,42 @@ class Courses
         $stmt->execute();
     }
 
+    public static function update(PDO $connection, array $optionsSET = [], array $optionsWHERE = []): void
+    {
+        $setClause = implode(
+            ', ',
+            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsSET))
+        );
+        $whereClause = implode(
+            'AND ',
+            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+        );
+
+        $sql = "UPDATE courses SET $setClause WHERE ($whereClause)";
+        $stmt = $connection->prepare($sql);
+
+        foreach ($optionsSET as $column => $value) {
+            $stmt->bindValue(':' . $column, $value);
+        }
+
+        foreach ($optionsWHERE as $column => $value) {
+            $stmt->bindValue(':' . $column, $value);
+        }
+
+        $stmt->execute();
+    }
+
     public static function attachCourseToUser(
         PDO $connection,
-        int $id_user,
         int $course_id,
+        int $user_id,
         bool $is_confirmed = false
     ): void {
         $sql = "INSERT INTO user_courses (user_id, course_id, is_confirmed) VALUES (:user_id, :course_id, :is_confirmed)";
 
         $stmt = $connection->prepare($sql);
 
-        $stmt->bindValue(':user_id', $id_user);
+        $stmt->bindValue(':user_id', $user_id);
         $stmt->bindValue(':course_id', $course_id);
         $stmt->bindValue(':is_confirmed', $is_confirmed, PDO::PARAM_BOOL);
 
@@ -49,16 +74,38 @@ class Courses
         $stmt->execute();
     }
 
-    public static function getCourses(PDO $connection): array
-    {
-        $sql = "SELECT id, courses.title FROM courses";
+    public static function get(
+        PDO $connection,
+        array $columnsSELECT = [],
+        array $optionsWHERE = []
+    ): array {
+        $columnsString = !empty($columnsSELECT) ? implode(', ', $columnsSELECT) : '*';
 
-        return $connection->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($optionsWHERE)) {
+            $whereClause = implode(
+                'AND ',
+                array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+            );
+            $sql = "SELECT $columnsString FROM courses WHERE ($whereClause)";
+            $stmt = $connection->prepare($sql);
+
+            foreach ($optionsWHERE as $column => $value) {
+                $stmt->bindValue(':' . $column, $value);
+            }
+        } else {
+            $sql = "SELECT $columnsString FROM courses";
+            $stmt = $connection->prepare($sql);
+        }
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public static function getAttachedCourses(PDO $connection, int $id, ?bool $is_confirmed = null): array
     {
-        $sql = "SELECT courses.id, courses.title,courses.description FROM user_courses JOIN courses ON courses.id = user_courses.course_id  WHERE user_courses.user_id = :id";
+        $sql = "SELECT * FROM user_courses JOIN courses ON courses.id = user_courses.course_id WHERE user_courses.user_id = :id";
 
         if ($is_confirmed !== null) {
             $sql .= " AND user_courses.is_confirmed = :is_confirmed";
