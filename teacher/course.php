@@ -14,7 +14,7 @@ Autoloader::register();
 Session::start();
 
 if (!Auth::checkUserType('teacher')) {
-    Url::redirect('forbidden.php');
+    Url::redirect('basic/forbidden.php');
 }
 
 //try {
@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (isset($_POST['toCreateHomework'])) {
         $_SESSION['ids'] = [];
+        unset($_SESSION['lastHomeworkID'],$_SESSION['form0'],$_SESSION['form1']);
         Url::redirect('teacher/createEditHomework.php', queryString: "course_id=" . $_GET['id']);
     }
     if (isset($_POST['toUpdateHomework'])) {
@@ -35,6 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'teacher/createEditHomework.php',
             queryString: "course_id=" . $_GET['id'] . "&homework_id=" . $_POST['homework_id']
         );
+    }
+    if (isset($_POST['toDeleteHomework'])) {
+        Homeworks::delete($connection, ['id' => $_POST['homework_id']]);
     }
     if (isset($_POST['title'])) {
         $connection = (new Database())->getDbConnection();
@@ -48,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
 }
 if (isset($_GET['id'])) {
-    $homework = Courses::get(
+    $course = Courses::get(
         $connection,
         ['title', 'description', 'start_date', 'end_date', 'difficulty_level', 'category', 'availability'],
         ['id' => $_GET['id']]
@@ -98,7 +102,7 @@ echo "</pre>";
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a href="main.php" class="tabs-tab">Пользователи</a>
+                <a href="../common/main.php" class="tabs-tab">Пользователи</a>
             </li>
             <li>
                 <a href="registrations.php" class="tabs-tab">Регистрации</a>
@@ -123,54 +127,54 @@ echo "</pre>";
                 <label>
                     Название
                     <input type="text" name="title" class="login__form-input mt7px"
-                           value="<?= $homework[0]['title'] ?>">
+                           value="<?= $course[0]['title'] ?>">
                 </label>
                 <label>
                     Дата начала
                     <input type="date" name="start_date" class="login__form-input mt7px"
-                           value="<?= $homework[0]['start_date'] ?>">
+                           value="<?= $course[0]['start_date'] ?>">
                 </label>
                 <label>
                     Дата конца
                     <input type="date" name="end_date" class="login__form-input mt7px"
-                           value="<?= $homework[0]['end_date'] ?>">
+                           value="<?= $course[0]['end_date'] ?>">
                 </label>
                 <label class="label-input mb16px">
                     <input type="checkbox" name="availability"
-                           checked="<?= $homework[0]['availability'] ? 'checked' : '' ?>"/>
+                           checked="<?= $course[0]['availability'] ? 'checked' : '' ?>"/>
                     Доступен
                 </label>
                 <label class="label-input "> Категория <select name="category" class="login__form-input mt7px">
-                        <option <?= $homework[0]['category'] === null ? 'selected' : '' ?> ></option>
-                        <option <?= $homework[0]['category'] === 'natural' ? 'selected' : '' ?>
+                        <option <?= $course[0]['category'] === null ? 'selected' : '' ?> ></option>
+                        <option <?= $course[0]['category'] === 'natural' ? 'selected' : '' ?>
                                 value="natural">Естественные науки
                         </option>
-                        <option <?= $homework[0]['category'] === 'exact' ? 'selected' : '' ?>
+                        <option <?= $course[0]['category'] === 'exact' ? 'selected' : '' ?>
                                 value="exact">Точные науки
                         </option>
-                        <option <?= $homework[0]['category'] === 'technical' ? 'selected' : '' ?>
+                        <option <?= $course[0]['category'] === 'technical' ? 'selected' : '' ?>
                                 value="technical">Технические науки
                         </option>
-                        <option <?= $homework[0]['category'] === 'socialHumanities' ? 'selected' : '' ?>
+                        <option <?= $course[0]['category'] === 'socialHumanities' ? 'selected' : '' ?>
                                 value="socialHumanities">Социально-гуманитарные науки
                         </option>
                     </select></label>
                 <label class="label-input"> Сложность <select name="difficulty_level" class="login__form-input mt7px">
-                        <option <?= $homework[0]['difficulty_level'] === null ? 'selected' : '' ?>></option>
-                        <option <?= $homework[0]['difficulty_level'] === 'easy' ? 'selected' : '' ?>
+                        <option <?= $course[0]['difficulty_level'] === null ? 'selected' : '' ?>></option>
+                        <option <?= $course[0]['difficulty_level'] === 'easy' ? 'selected' : '' ?>
                                 value="easy">Легкий уровень
                         </option>
-                        <option <?= $homework[0]['difficulty_level'] === 'medium' ? 'selected' : '' ?>
+                        <option <?= $course[0]['difficulty_level'] === 'medium' ? 'selected' : '' ?>
                                 value="medium">Средний уровень
                         </option>
-                        <option <?= $homework[0]['difficulty_level'] === 'hard' ? 'selected' : '' ?>
+                        <option <?= $course[0]['difficulty_level'] === 'hard' ? 'selected' : '' ?>
                                 value="hard">Сложный уровень
                         </option>
                     </select></label>
                 <label class="label-input">
                     Описание
                     <textarea name="description" class="login__form-input h200 mt7px" maxlength="50"
-                    ><?= $homework[0]['description'] ?></textarea>
+                    ><?= $course[0]['description'] ?></textarea>
                 </label>
                 <input type="hidden" name="updated_by" value="<?= $_SESSION['user_id'] ?>">
                 <input type="hidden" name="updated_at" value="<?php
@@ -207,6 +211,7 @@ echo "</pre>";
                     <th class="tg-amwm">Обновил ID</th>
                     <th class="tg-amwm"></th>
                     <th class="tg-amwm"></th>
+                    <th class="tg-amwm"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -239,7 +244,14 @@ echo "</pre>";
                         <td class="<?= $rowClass ?>">
                             <form method="post">
                                 <input type="hidden" name="course_id" value="<?= $homework['id'] ?>">
-                                <button class="table-button" name="confirmation" value="confirmed">Просмотр результатов
+                                <button class="table-button" name="confirmation" value="confirmed">Результаты
+                                </button>
+                            </form>
+                        </td>
+                        <td class="<?= $rowClass ?>">
+                            <form method="post">
+                                <input type="hidden" name="homework_id" value="<?= $homework['id'] ?>">
+                                <button class="table-button" name="toDeleteHomework">Удалить
                                 </button>
                             </form>
                         </td>

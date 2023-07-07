@@ -490,3 +490,8 @@ textarea {
     flex-direction: column;
     align-items: center;
 }
+
+.flex-radio{
+    display: flex;
+    flex-direction: column
+}

@@ -76,7 +76,7 @@ try {
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
-        <div class="login__modal mt6rem">
+        <div class="login__modal mt4rem">
             <div class="login__header">Вход Homework System</div>
             <form action="" class="login__form" method="post">
                 <input type="number" name="login" class="login__form-input" placeholder="ID">

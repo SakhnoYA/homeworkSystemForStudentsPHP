@@ -4,35 +4,41 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Autoloader.php';
 
 use Classes\Auth;
 use Classes\Autoloader;
-use Classes\Courses;
 use Classes\Database;
+use Classes\Homeworks;
 use Classes\Session;
 use Classes\Url;
 
 Autoloader::register();
 Session::start();
 
-if (!Auth::checkUserType('teacher')) {
+if (!Auth::checkUserType('student')) {
     Url::redirect('basic/forbidden.php');
 }
 
 //try {
-//} catch (PDOException $e) {
-//    $error = "Произошла ошибка базы данных: " . $e->getCode();
-//}
-
 $connection = (new Database())->getDbConnection();
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['logout'])) {
         Session::destroySession();
         Url::redirect('index.php');
     }
-//        Url::redirect(substr($_SERVER['PHP_SELF'], 1));
+    if(isset($_POST['toSolve'])){
+        Url::redirect(
+            'student/homework.php',
+            queryString: "&homework_id=" . $_POST['homework_id']
+        );
+    }
+//        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
 }
-
-
-$confirmedAttachedCourses = Courses::getAttachedCourses($connection, $_SESSION['user_id'], true);
+if (isset($_GET['id'])) {
+    $attachedHomeworks = Homeworks::getAttachedHomeworks($connection, $_GET['id']);
+} else {
+    die("No Id in query parameter");
+}
+//} catch (PDOException $e) {
+//    $error = "Произошла ошибка базы данных: " . $e->getCode();
+//}
 
 ?>
 <!DOCTYPE html>
@@ -68,10 +74,16 @@ $confirmedAttachedCourses = Courses::getAttachedCourses($connection, $_SESSION['
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a href="main.php" class="tabs-tab tabs-tab_active">Курсы</a>
+                <a href="../common/main.php" class="tabs-tab">Пользователи</a>
             </li>
             <li>
-                <a href="/common/accessRequest.php  " class="tabs-tab ">Запросить доступ</a>
+                <a href="registrations.php" class="tabs-tab">Регистрации</a>
+            </li>
+            <li>
+                <a class="tabs-tab">Создание курса</a>
+            </li>
+            <li>
+                <a href="accessRequests.php" class="tabs-tab">Запросы доступа</a>
             </li>
         </ul>
         <form method="post">
@@ -81,48 +93,41 @@ $confirmedAttachedCourses = Courses::getAttachedCourses($connection, $_SESSION['
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
-        <div class="login__modal mt6rem mb6rem width-auto dark-slay-gray padding-20-20 ">
+        <div class="login__modal  mt6rem mb6rem width-auto dark-slay-gray padding-20-20 ">
             <table class="tg">
                 <thead>
                 <tr>
-                    <th class="tg-amwm">ID</th>
                     <th class="tg-amwm">Название</th>
                     <th class="tg-amwm">Описание</th>
+                    <th class="tg-amwm">Всего попыток</th>
+                    <th class="tg-amwm">Всего баллов</th>
+                    <th class="tg-amwm">Проходные баллы</th>
                     <th class="tg-amwm">Дата начала</th>
                     <th class="tg-amwm">Дата конца</th>
-                    <th class="tg-amwm">Уровень сложности</th>
-                    <th class="tg-amwm">Категория</th>
-                    <th class="tg-amwm">Доступность</th>
-                    <th class="tg-amwm">Дата создания</th>
-                    <th class="tg-amwm">Дата обновления</th>
-                    <th class="tg-amwm">Обновил ID</th>
                     <th class="tg-amwm"></th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php
                 $isOdd = true;
-                foreach ($confirmedAttachedCourses as $course):
+                foreach ($attachedHomeworks as $homework):
                     $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
                     $isOdd = !$isOdd;
                     ?>
                     <tr>
-                        <td class="<?= $rowClass ?>"><?= $course['id'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['title'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['description'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['start_date'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['end_date'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['difficulty_level'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['category'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['availability'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['created_at'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['updated_at'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $course['updated_by'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['title'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['description'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['max_attempts'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['total_marks'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['passing_marks'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['start_date'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['end_date'] ?></td>
                         <td class="<?= $rowClass ?>">
-                            <a href="../teacher/course.php?id=<?= $course['id'] ?>">
-                                <button class="table-button">Редактировать
+                            <form method="post">
+                                <input type="hidden" name="homework_id" value="<?= $homework['id'] ?>">
+                                <button class="table-button" name="toSolve">Решать
                                 </button>
-                            </a>
+                            </form>
                         </td>
                     </tr>
                 <?php
@@ -138,6 +143,6 @@ $confirmedAttachedCourses = Courses::getAttachedCourses($connection, $_SESSION['
         <a class="github_link" href="https://github.com/SakhnoYA">Мой гитхаб</a>
     </div>
 </footer>
-
+<script src="/js/script.js"></script>
 </body>
 </html>

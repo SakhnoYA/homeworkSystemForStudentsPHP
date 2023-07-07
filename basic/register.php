@@ -58,7 +58,7 @@ try {
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
-        <div class="login__modal mt6rem">
+        <div class="login__modal mt4rem">
             <div class="login__header fs18">Регистрация Homework System</div>
             <form class="login__form" method="post">
                 <input type="number" name="id" class="login__form-input" placeholder="ID" required>

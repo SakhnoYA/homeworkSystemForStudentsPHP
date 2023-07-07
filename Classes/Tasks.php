@@ -111,4 +111,23 @@ class Tasks
 
         $stmt->execute();
     }
+
+    public static function delete(PDO $connection, array $optionsWHERE = []): void
+    {
+        $whereClause = implode(
+            'AND ',
+            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+        );
+
+        $sql = "DELETE FROM tasks WHERE ($whereClause)";
+        $stmt = $connection->prepare($sql);
+
+        foreach ($optionsWHERE as $column => $value) {
+            $stmt->bindValue(':' . $column, $value);
+        }
+
+        $stmt->execute();
+    }
+
+
 }

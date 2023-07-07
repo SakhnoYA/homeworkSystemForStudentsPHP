@@ -14,7 +14,7 @@ Autoloader::register();
 Session::start();
 
 if (!Auth::checkUserType('teacher')) {
-    Url::redirect('forbidden.php');
+    Url::redirect('basic/forbidden.php');
 }
 
 $connection = (new Database())->getDbConnection();
@@ -45,16 +45,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
     }
     if (isset($_POST['toCreateTaskToHomework'])) {
-        if (isset($_GET['homework_id'])) {
+        if (isset($_GET['homework_id']) || isset($_SESSION['lastHomeworkID'])) {
             Tasks::attachTaskToHomework(
                 $connection,
                 Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== '')),
-                $_GET['homework_id']
+                $_GET['homework_id'] ?? $_SESSION['lastHomeworkID']
             );
         } else {
             $_SESSION['ids'][] = Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== ''));
-            $_SESSION['form1']=[];
         }
+        $_SESSION['form1'] = [];
     }
     if (isset($_POST['toUpdateTask'])) {
         Tasks::update(
@@ -63,7 +63,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ['id' => $_POST['id']]
         );
     }
-//    Url::redirect(substr($_SERVER['PHP_SELF'], 1));
+    if (isset($_POST['toDeleteTask'])) {
+        Tasks::delete($connection, ['id' => $_POST['id']]);
+    }
+    Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
 }
 if (!isset($_GET['course_id'])) {
     die("No Id in query parameter");
@@ -81,7 +84,6 @@ if (isset($_GET['homework_id'])) {
         $_SESSION['lastHomeworkID']
     );
 }
-
 echo "<pre>";
 print_r($_SESSION);
 echo "</pre>";
@@ -120,7 +122,7 @@ echo "</pre>";
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a href="main.php" class="tabs-tab">Пользователи</a>
+                <a href="../common/main.php" class="tabs-tab">Пользователи</a>
             </li>
             <li>
                 <a href="registrations.php" class="tabs-tab">Регистрации</a>
@@ -180,7 +182,7 @@ echo "</pre>";
 
                 <label class="label-input">
                     Описание
-                    <textarea name="description" class="login__form-input h200 mt7px" maxlength="50"
+                    <textarea name="description" class="login__form-input h200 mt7px" maxlength="50" required
                     ><?= $homework[0]['description'] ?? $_SESSION['form0']['description'] ?? '' ?></textarea>
                 </label>
                 <input type="hidden" name="updated_by" value="<?= $_SESSION['user_id'] ?>">
@@ -238,8 +240,10 @@ echo "</pre>";
                     Доступен
                 </label>
                 <textarea name="answer[]" class="login__form-input " required maxlength="50"
-                          placeholder="Ответы через пробел"><?= $_SESSION['form1']['answers'] ?? '' ?></textarea>
-                <textarea name="description" class="login__form-input h50" maxlength="50"
+                          placeholder="Ответы через пробел"><?= $_SESSION['form1']['answer'] ?? '' ?></textarea>
+                <textarea name="options[]" class="login__form-input " required maxlength="50"
+                          placeholder="Варианты ответа через пробел"><?= $_SESSION['form1']['options'] ?? '' ?></textarea>
+                <textarea name="description" class="login__form-input h50" maxlength="50" required
                           placeholder="Описание"><?= $_SESSION['form1']['description'] ?? '' ?></textarea>
                 <input type="number" name="max_score" class="login__form-input"
                        placeholder="Количество баллов" value="<?= $_SESSION['form1']['max_score'] ?? '' ?>">
@@ -281,32 +285,45 @@ echo "</pre>";
                     </div>
 
                     <select id="type" name="type" class="login__form-input mt7px">
-                        <option value="single_choice" <?= $task['type'] === null ? 'selected' : '' ?> >Одиночный
+                        <option value="single_choice" <?= $task['type'] === 'single_choice' ? 'selected' : '' ?> >
+                            Одиночный
                             выбор
                         </option>
-                        <option value="word_match" <?= $task['type'] === null ? 'selected' : '' ?> >Соответствие слову
+                        <option value="word_match" <?= $task['type'] === 'word_match' ? 'selected' : '' ?> >Соответствие
+                            слову
                         </option>
-                        <option value="multiple_choice" <?= $task['type'] === null ? 'selected' : '' ?>>Множественный
+                        <option value="multiple_choice" <?= $task['type'] === 'multiple_choice' ? 'selected' : '' ?>>
+                            Множественный
                             выбор
                         </option>
                     </select>
                     <label class="label-input mb16px">
                         <input type="checkbox" name="is_optional"
-                               checked="<?= $task['is_optional'] ? 'checked' : '' ?>"/>
+                            <?= $task['is_optional'] ? 'checked' : '' ?>/>
                         Доступен
                     </label>
 
                     <label class="label-input">
-                        Ответ
+                        Правильный ответ
                         <textarea name="answer[]" class="login__form-input mt7px" maxlength="50"
                                   required><?= preg_replace(
                                 '/,/',
                                 ' ',
                                 substr($task['answer'], 1, -1)
                             ) ?></textarea>
-                    </label> <label class="label-input">
+                    </label>
+                    <label class="label-input">
+                        Варианты ответа
+                        <textarea name="options[]" class="login__form-input mt7px" maxlength="50"
+                                  required><?= preg_replace(
+                                '/,/',
+                                ' ',
+                                substr($task['options'], 1, -1)
+                            ) ?></textarea>
+                    </label>
+                    <label class="label-input">
                         Описание
-                        <textarea name="description" class="login__form-input h50 mt7px" maxlength="50"
+                        <textarea name="description" class="login__form-input h50 mt7px" maxlength="50" required
                         ><?= $task['description'] ?></textarea>
                     </label>
                     <label>
@@ -318,6 +335,8 @@ echo "</pre>";
                     <input type="hidden" name="updated_at" value="<?php
                     echo date('Y-m-d'); ?>">
                     <input type="hidden" name="id" value="<?= $task['id'] ?>">
+                    <button class="enter__link bg-red mt1rem" name="toDeleteTask">Удалить
+                    </button>
                     <button type="submit" name="toUpdateTask" class="enter__link mt1rem">Сохранить</button>
                 </form>
                 <?php

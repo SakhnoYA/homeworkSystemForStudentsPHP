@@ -13,7 +13,7 @@ Autoloader::register();
 Session::start();
 
 if (!Auth::checkUserType('admin')) {
-    Url::redirect('forbidden.php');
+    Url::redirect('basic/forbidden.php');
 }
 
 //try {

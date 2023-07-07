@@ -104,4 +104,21 @@ class Homeworks
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    //TODO Сделать базовый класс
+    public static function delete(PDO $connection, array $optionsWHERE = []): void
+    {
+        $whereClause = implode(
+            'AND ',
+            array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+        );
+
+        $sql = "DELETE FROM homeworks WHERE ($whereClause)";
+        $stmt = $connection->prepare($sql);
+
+        foreach ($optionsWHERE as $column => $value) {
+            $stmt->bindValue(':' . $column, $value);
+        }
+
+        $stmt->execute();
+    }
 }

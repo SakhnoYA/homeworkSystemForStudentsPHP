@@ -13,7 +13,7 @@ Autoloader::register();
 Session::start();
 
 if (!(Auth::checkUserType('teacher') || Auth::checkUserType('student'))) {
-    Url::redirect('forbidden.php');
+    Url::redirect('basic/forbidden.php');
 }
 
 try {
@@ -77,7 +77,7 @@ try {
         <ul class="tabs">
             <?php
             if ($_SESSION['user_type'] === 'teacher') : ?>
-                <a href="/teacher/main.php" class="tabs-tab">Курсы</a>
+                <a href="/common/main.php" class="tabs-tab">Курсы</a>
             <?php
             elseif ($_SESSION['user_type'] === 'student'): ?>
                 <a href="/student/main.php" class="tabs-tab">Домашние задания</a>
