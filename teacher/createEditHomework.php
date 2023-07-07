@@ -25,31 +25,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Url::redirect('index.php');
     }
     if (isset($_POST['toCreateHomework'])) {
-        $_SESSION['lastHomeworkID'] = Homeworks::create(
+        $lastHomeworkID = Homeworks::create(
             $connection,
             array_filter($_POST, static fn($value) => $value !== '')
         );
 
-        Homeworks::attachHomeworkToCourse($connection, $_SESSION['lastHomeworkID'], $_GET['course_id']);
+        Homeworks::attachHomeworkToCourse($connection, $lastHomeworkID, $_GET['course_id']);
 
         foreach ($_SESSION['ids'] as $id) {
-            Tasks::attachTaskToHomework($connection, $id, $_SESSION['lastHomeworkID']);
+            Tasks::attachTaskToHomework($connection, $id, $lastHomeworkID);
         }
-        unset($_SESSION['ids']);
+//        unset($_SESSION['ids']);
+        Url::redirect(
+            substr($_SERVER['PHP_SELF'], 1),
+            queryString: $_SERVER['QUERY_STRING'] . '&homework_id=' . $lastHomeworkID
+        );
     }
     if (isset($_POST['toUpdateHomework'])) {
         Homeworks::update(
             $connection,
             array_filter($_POST, static fn($value) => $value !== ''),
-            ['id' => $_GET['homework_id'] ?? $_SESSION['lastHomeworkID']]
+            ['id' => $_GET['homework_id']]
         );
     }
     if (isset($_POST['toCreateTaskToHomework'])) {
-        if (isset($_GET['homework_id']) || isset($_SESSION['lastHomeworkID'])) {
+        if (isset($_GET['homework_id'])) {
             Tasks::attachTaskToHomework(
                 $connection,
                 Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== '')),
-                $_GET['homework_id'] ?? $_SESSION['lastHomeworkID']
+                $_GET['homework_id']
             );
         } else {
             $_SESSION['ids'][] = Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== ''));
@@ -79,10 +83,7 @@ if (isset($_GET['homework_id'])) {
     );
     $homework = Homeworks::get($connection, optionsWHERE: ['id' => $_GET['homework_id']]);
 } else {
-    $attachedTasks = isset($_SESSION['ids']) ? Tasks::getByIds($connection, $_SESSION['ids']) : Tasks::getAttachedTasks(
-        $connection,
-        $_SESSION['lastHomeworkID']
-    );
+    $attachedTasks = Tasks::getByIds($connection, $_SESSION['ids']);
 }
 echo "<pre>";
 print_r($_SESSION);
@@ -142,7 +143,7 @@ echo "</pre>";
 <main class="dark-grey-background">
     <div class="main__content">
         <div class="login__modal mt6rem">
-            <div class="login__header"><?= isset($_SESSION['lastHomeworkID']) || isset($homework) ? "Изменить" : "Создать" ?>
+            <div class="login__header"><?= isset($homework) ? "Изменить" : "Создать" ?>
                 домашнее
                 задание
             </div>
@@ -187,14 +188,14 @@ echo "</pre>";
                 </label>
                 <input type="hidden" name="updated_by" value="<?= $_SESSION['user_id'] ?>">
                 <?php
-                if (!(isset($_SESSION['lastHomeworkID']) || isset($homework))):?>
+                if (!(isset($homework))):?>
                     <input type="hidden" name="created_by" value=" <?= $_SESSION['user_id'] ?>">
                 <?php
                 endif ?>
                 <button type="submit"
-                        name="<?= isset($_SESSION['lastHomeworkID']) || isset($homework) ? "toUpdateHomework" : "toCreateHomework" ?>"
+                        name="<?= isset($homework) ? "toUpdateHomework" : "toCreateHomework" ?>"
                         class="enter__link">
-                    <?= isset($_SESSION['lastHomeworkID']) || isset($homework) ? "Сохранить" : "Создать" ?>
+                    <?= isset($homework) ? "Сохранить" : "Создать" ?>
                 </button>
             </form>
             <?php
