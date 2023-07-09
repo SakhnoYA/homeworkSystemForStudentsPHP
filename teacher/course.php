@@ -232,7 +232,7 @@ echo "</pre>";
                         <td class="<?= $rowClass ?>"><?= $homework['end_date'] ?></td>
                         <td class="<?= $rowClass ?>"><?= $homework['created_at'] ?></td>
                         <td class="<?= $rowClass ?>"><?= $homework['updated_at'] ?></td>
-                        <td class="<?= $rowClass ?>"><?= $homework['created_at'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $homework['created_by'] ?></td>
                         <td class="<?= $rowClass ?>"><?= $homework['updated_by'] ?></td>
                         <td class="<?= $rowClass ?>">
                             <form method="post">

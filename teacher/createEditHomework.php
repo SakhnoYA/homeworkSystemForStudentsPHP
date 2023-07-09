@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //        unset($_SESSION['ids']);
         Url::redirect(
             substr($_SERVER['PHP_SELF'], 1),
-            queryString: $_SERVER['QUERY_STRING'] . '&homework_id=' . $lastHomeworkID
+            queryString: $_SERVER['QUERY_STRING'] . '&homework_id=' . $lastHomeworkID . '#createTaskForm'
         );
     }
     if (isset($_POST['toUpdateHomework'])) {
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['toDeleteTask'])) {
         Tasks::delete($connection, ['id' => $_POST['id']]);
     }
-    Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
+    Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING'] . '#createTaskForm');
 }
 if (!isset($_GET['course_id'])) {
     die("No Id in query parameter");
@@ -85,9 +85,6 @@ if (isset($_GET['homework_id'])) {
 } else {
     $attachedTasks = Tasks::getByIds($connection, $_SESSION['ids']);
 }
-echo "<pre>";
-print_r($_SESSION);
-echo "</pre>";
 
 ?>
 <!DOCTYPE html>
@@ -183,7 +180,7 @@ echo "</pre>";
 
                 <label class="label-input">
                     Описание
-                    <textarea name="description" class="login__form-input h200 mt7px" maxlength="50" required
+                    <textarea name="description" class="login__form-input h200 mt7px" maxlength="50"
                     ><?= $homework[0]['description'] ?? $_SESSION['form0']['description'] ?? '' ?></textarea>
                 </label>
                 <input type="hidden" name="updated_by" value="<?= $_SESSION['user_id'] ?>">
@@ -204,7 +201,7 @@ echo "</pre>";
             <?php
             endif; ?>
         </div>
-        <div class="login__modal w40p mt4rem mb4rem">
+        <div class="login__modal w40p mt4rem mb4rem" id="createTaskForm">
             <div class="login__header">Создать задачу</div>
             <form class="login__form" method="post">
                 <input type="text" name="title" class="login__form-input" required placeholder="Название"
@@ -240,12 +237,12 @@ echo "</pre>";
                            checked="<?= isset($_SESSION['form1']['is_optional']) && $_SESSION['form1']['is_optional'] ? 'checked' : '' ?>"/>
                     Доступен
                 </label>
-                <textarea name="answer[]" class="login__form-input " required maxlength="50"
-                          placeholder="Ответы через пробел"><?= $_SESSION['form1']['answer'] ?? '' ?></textarea>
-                <textarea name="options[]" class="login__form-input " required maxlength="50"
-                          placeholder="Варианты ответа через пробел"><?= $_SESSION['form1']['options'] ?? '' ?></textarea>
                 <textarea name="description" class="login__form-input h50" maxlength="50" required
                           placeholder="Описание"><?= $_SESSION['form1']['description'] ?? '' ?></textarea>
+                <textarea name="options[]" class="login__form-input " required maxlength="50"
+                          placeholder="Варианты ответа через пробел"><?= $_SESSION['form1']['options'] ?? '' ?></textarea>
+                <textarea name="answer[]" class="login__form-input " required maxlength="50"
+                          placeholder="Правильные варианты ответа через пробел"><?= $_SESSION['form1']['answer'] ?? '' ?></textarea>
                 <input type="number" name="max_score" class="login__form-input"
                        placeholder="Количество баллов" value="<?= $_SESSION['form1']['max_score'] ?? '' ?>">
                 <input type="hidden" name="updated_at" value="<?php
@@ -356,6 +353,14 @@ echo "</pre>";
         <a class="github_link" href="https://github.com/SakhnoYA">Мой гитхаб</a>
     </div>
 </footer>
-<script src="/js/homework.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const targetElement = document.getElementById(window.location.hash.slice(1))
+        if (targetElement) {
+            window.scrollTo(0, targetElement.offsetTop);
+        }
+    });
+</script>
+<script src="/js/cacheForms.js"></script>
 </body>
 </html>

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if(isset($_POST['toSolve'])){
         Url::redirect(
             'student/homework.php',
-            queryString: "&homework_id=" . $_POST['homework_id']
+            queryString: "homework_id=" . $_POST['homework_id']
         );
     }
 //        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);

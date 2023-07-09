@@ -10,7 +10,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function collectAllFormData(forms) {
     const formDatas = new FormData();
-    forms.forEach((form,index) => {
+    forms.forEach((form, index) => {
         const formData = new FormData(form);
         for (const [name, value] of formData.entries()) {
             formDatas.append(`form${index}[${name}]`, value);
@@ -20,6 +20,7 @@ function collectAllFormData(forms) {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', '/common/saveFormsData.php', true);
 
-    xhr.send(formDatas); // Отправляем данные без обертки
+    xhr.send(formDatas);
 
 }
+

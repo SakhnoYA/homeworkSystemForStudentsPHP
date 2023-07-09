@@ -30,14 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Session::destroySession();
         Url::redirect('index.php');
     }
+    if(isset($_POST['toCreateUser'])){
+        Url::redirect('admin/user.php',queryString: 'id=' . $_POST['id']);
+    }
 }
+$optionsWHERE = [];
 
 $connection = (new Database())->getDbConnection();
 
-$optionsWHERE = [];
 
-if (isset($_POST['type']) && $_POST['type'] !== '0') {
-    $optionsWHERE['type'] = $_POST['type'];
+if (isset($_GET['type']) && $_GET['type'] !== '0') {
+    $optionsWHERE['type'] = $_GET['type'];
 }
 
 $users = Users::getWithJoinUserType($connection, optionsWHERE: $optionsWHERE);
@@ -93,63 +96,68 @@ $users = Users::getWithJoinUserType($connection, optionsWHERE: $optionsWHERE);
         </form>
     </div>
     <div class="header__subcontent">
-        <form method="post">
-            <button type="submit"  name="type" value="0" class="header__button-login bd-none fw300 fs17">Все пользователи</button>
-            <button type="submit"  name="type" value="3" class="header__button-login bd-none fw300 fs17">Преподаватели</button>
-            <button type="submit"  name="type" value="2" class="header__button-login bd-none fw300 fs17">Студенты</button>
+        <form method="get">
+            <button type="submit" name="type" value="0" class="header__button-login bd-none fw300 fs17">Все
+                пользователи
+            </button>
+            <button type="submit" name="type" value="3" class="header__button-login bd-none fw300 fs17">Преподаватели
+            </button>
+            <button type="submit" name="type" value="2" class="header__button-login bd-none fw300 fs17">Студенты
+            </button>
         </form>
         <a href="createUser.php">
-            <button type="submit" class=" header__button-login  fs17"> Создать нового пользователя </button>
+            <button type="submit" class=" header__button-login  fs17"> Создать нового пользователя</button>
         </a>
     </div>
 </header>
 <main class="dark-grey-background">
     <div class="main__content">
         <div class="login__modal mt6rem mb6rem width-auto dark-slay-gray padding-20-20 ">
-        <table class="tg">
-            <thead>
-            <tr>
-                <th class="tg-amwm">ID</th>
-                <th class="tg-amwm">Дата регистрации</th>
-                <th class="tg-amwm">Имя</th>
-                <th class="tg-amwm">Фамилия</th>
-                <th class="tg-amwm">Отчество</th>
-                <th class="tg-amwm">Хеш пароля</th>
-                <th class="tg-amwm">Тип пользователя</th>
-                <th class="tg-amwm">Ip</th>
-                <th class="tg-amwm">Подтверждение</th>
-                <th class="tg-amwm">Профиль</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            $isOdd = true;
-            foreach ($users as $user):
-                $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
-                $isOdd = !$isOdd;
-                ?>
+            <table class="tg">
+                <thead>
                 <tr>
-                    <td class="<?= $rowClass ?>"><?= $user['id'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['registration_date'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['password'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['readable_name'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['ip'] ?></td>
-                    <td class="<?= $rowClass ?>"><?= $user['is_confirmed'] ? 'Имеется' : 'Отсутствует' ?></td>
-                    <td class="<?= $rowClass ?>">
-                        <a href="user.php?id=<?= $user['id'] ?>">
-                            <button class="table-button">Профиль
-                            </button>
-                        </a>
-                    </td>
+                    <th class="tg-amwm">ID</th>
+                    <th class="tg-amwm">Дата регистрации</th>
+                    <th class="tg-amwm">Имя</th>
+                    <th class="tg-amwm">Фамилия</th>
+                    <th class="tg-amwm">Отчество</th>
+                    <th class="tg-amwm">Тип пользователя</th>
+                    <th class="tg-amwm">Ip</th>
+                    <th class="tg-amwm">Подтверждение</th>
+                    <th class="tg-amwm">Профиль</th>
                 </tr>
-            <?php
-            endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                <?php
+                $isOdd = true;
+                foreach ($users as $user):
+                    $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
+                    $isOdd = !$isOdd;
+                    ?>
+                    <tr>
+                        <td class="<?= $rowClass ?>"><?= $user['id'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['registration_date'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['readable_name'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['ip'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $user['is_confirmed'] ? 'Имеется' : 'Отсутствует' ?></td>
+                        <td class="<?= $rowClass ?>">
+                            <form method="post">
+                                <input type="hidden" name="id" value="<?= $user['id'] ?>">
+                                <button class="table-button" name="toCreateUser">Профиль
+                                </button>
+                            </form>
+<!--                            <a href="user.php?id=--><?php //= $user['id'] ?><!--">-->
+<!--                            </a>-->
+                        </td>
+                    </tr>
+                <?php
+                endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 <footer>

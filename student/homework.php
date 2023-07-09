@@ -24,46 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Session::destroySession();
         Url::redirect('index.php');
     }
-//    if (isset($_POST['toCreateHomework'])) {
-//        $_SESSION['lastHomeworkID'] = Homeworks::create(
-//            $connection,
-//            array_filter($_POST, static fn($value) => $value !== '')
-//        );
-//
-//        Homeworks::attachHomeworkToCourse($connection, $_SESSION['lastHomeworkID'], $_GET['course_id']);
-//
-//        foreach ($_SESSION['ids'] as $id) {
-//            Tasks::attachTaskToHomework($connection, $id, $_SESSION['lastHomeworkID']);
-//        }
-//        unset($_SESSION['ids']);
-//    }
-//    if (isset($_POST['toUpdateHomework'])) {
-//        Homeworks::update(
-//            $connection,
-//            array_filter($_POST, static fn($value) => $value !== ''),
-//            ['id' => $_GET['homework_id'] ?? $_SESSION['lastHomeworkID']]
-//        );
-//    }
-//    if (isset($_POST['toCreateTaskToHomework'])) {
-//        if (isset($_GET['homework_id'])) {
-//            Tasks::attachTaskToHomework(
-//                $connection,
-//                Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== '')),
-//                $_GET['homework_id']
-//            );
-//        } else {
-//            $_SESSION['ids'][] = Tasks::create($connection, array_filter($_POST, static fn($value) => $value !== ''));
-//            $_SESSION['form1']=[];
-//        }
-//    }
-//    if (isset($_POST['toUpdateTask'])) {
-//        Tasks::update(
-//            $connection,
-//            array_filter($_POST, static fn($value, $key) => $value !== '' && $key !== 'id', ARRAY_FILTER_USE_BOTH),
-//            ['id' => $_POST['id']]
-//        );
-//    }
-//    Url::redirect(substr($_SERVER['PHP_SELF'], 1));
 }
 
 if (isset($_GET['homework_id'])) {
@@ -131,37 +91,20 @@ echo "</pre>";
     </div>
 </header>
 <main class="dark-grey-background">
-    <div class="main__content">
+    <div class="main__content mt4rem">
         <?php
         foreach ($attachedTasks as $task): ?>
-            <div class="login__modal w40p mt4rem mb4rem ">
+            <div class="login__modal w40p  mb1rem ">
                 <div class="login__header"><?= $task['title'] ?></div>
-                <form method="post">
-
-                    <!--                    <div class="divwithtooltip">-->
-                    <!--                        <label class="label-input mt7px" for="type">Тип</label>-->
-                    <!--                        <div class="tooltip "> ⓘ-->
-                    <!--                            <div class="tooltip-text">-->
-                    <!--                                <ul>-->
-                    <!--                                    <li>Одиночный выбор<p>Требуется выбрать один верный вариант ответа</p></li>-->
-                    <!--                                    <li>Соответствие слову <p>Tребуется ввести слово и проверить его соответствие-->
-                    <!--                                            варианту-->
-                    <!--                                            ответа</p></li>-->
-                    <!--                                    <li>Множественный выбор<p>Требуется выбрать верную комбинацию ответов</p></li>-->
-                    <!--                                </ul>-->
-                    <!--                            </div>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
-
+                <form method="post" class="login__form">
                     <p><?= $task['description'] ?></p>
-
                     <?php
                     if ($task['type'] === 'single_choice'): ?>
                         <div class="radio flex-radio">
                             <?php
-                            foreach ($task['options'] as $option): ?>
-                                <label class="radio-label">
-                                    <input type="radio" name="user_input[]" required checked value="2">
+                            foreach (explode(',', substr($task['options'], 1, -1)) as $option): ?>
+                                <label class="radio-label mb5px">
+                                    <input type="radio" name="user_input[]" value="<?= $option ?>">
                                     <?= $option ?>
                                 </label>
                             <?php
@@ -171,9 +114,9 @@ echo "</pre>";
                     elseif ($task['type'] === 'multiple_choice'): ?>
                         <div class="radio flex-radio">
                             <?php
-                            foreach ($task['options'] as $option): ?>
-                                <label class="label-input mb16px">
-                                    <input type="checkbox" name="user_input[]"/>
+                            foreach (explode(',', substr($task['options'], 1, -1)) as $option): ?>
+                                <label class="label-input mb5px">
+                                    <input type="checkbox" name="user_input[]" value="<?= $option ?>"/>
                                     <?= $option ?>
                                 </label>
                             <?php
@@ -181,42 +124,16 @@ echo "</pre>";
                         </div>
                     <?php
                     else: ?>
-                        <input type="text" name="user_input[]"/>
+                        <input type="text" class="login__form-input" name="user_input[]" placeholder="Ответ"/>
                     <?php
                     endif ?>
-                    <!--                    <label class="label-input">-->
-                    <!--                        Ответ-->
-                    <!--                        <textarea name="answer[]" class="login__form-input mt7px" maxlength="50"-->
-                    <!--                                  required>--><?php
-                    //= preg_replace(
-                    //                                '/,/',
-                    //                                ' ',
-                    //                                substr($task['answer'], 1, -1)
-                    //                            ) ?><!--</textarea>-->
-                    <!--                    </label> <label class="label-input">-->
-                    <!--                        Описание-->
-                    <!--                        <textarea name="description" class="login__form-input h50 mt7px" maxlength="50"-->
-                    <!--                        >--><?php
-                    //= $task['description'] ?><!--</textarea>-->
-                    <!--                    </label>-->
-                    <!--                    <label>-->
-                    <!--                        Количество баллов-->
-                    <!--                        <input type="number" name="max_score" class="login__form-input mt7px"-->
-                    <!--                               value="--><?php
-                    //= $task['max_score'] ?><!--">-->
-                    <!--                    </label>-->
                     <?php
                     if (isset($task['max_score'])):
                         ?>
                         <div class="role">Количество баллов: <?= $task['max_score'] ?></div>
                     <?php
                     endif ?>
-                    <!--                    <input type="hidden" name="updated_by" value="--><?php
-                    //= $_SESSION['user_id'] ?><!--">-->
-                    <!--                    <input type="hidden" name="updated_at" value="--><?php
-                    //                    echo date('Y-m-d'); ?><!--">-->
                     <input type="hidden" name="id" value="<?= $task['id'] ?>">
-                    <!--                    <button type="submit" name="toUpdateTask" class="enter__link mt1rem">Сохранить</button>-->
                 </form>
                 <?php
                 if (!empty($error)) : ?>
@@ -226,6 +143,10 @@ echo "</pre>";
             </div>
         <?php
         endforeach; ?>
+        <div class="register__modal mt1rem mb6rem">
+            <button name="toSendHomework" class="register__modal-link">Отправить
+            </button>
+        </div>
     </div>
 </main>
 <footer>
@@ -234,6 +155,6 @@ echo "</pre>";
         <a class="github_link" href="https://github.com/SakhnoYA">Мой гитхаб</a>
     </div>
 </footer>
-<script src="/js/homework.js"></script>
+<script src="/js/checkHomework.js"></script>
 </body>
 </html>
