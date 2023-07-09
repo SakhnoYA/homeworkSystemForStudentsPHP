@@ -5,37 +5,34 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Autoloader.php';
 use Classes\Attempts;
 use Classes\Auth;
 use Classes\Autoloader;
+use Classes\Courses;
 use Classes\Database;
 use Classes\Session;
-use Classes\Tasks;
 use Classes\Url;
 
 Autoloader::register();
 Session::start();
 
-if (!Auth::checkUserType('student')) {
+if (!Auth::checkUserType('teacher')) {
     Url::redirect('basic/forbidden.php');
 }
 
-$connection = (new Database())->getDbConnection();
 //try {
+//} catch (PDOException $e) {
+//    $error = "Произошла ошибка базы данных: " . $e->getCode();
+//}
+
+$connection = (new Database())->getDbConnection();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['logout'])) {
         Session::destroySession();
         Url::redirect('index.php');
     }
+//        Url::redirect(substr($_SERVER['PHP_SELF'], 1));
 }
 
-if (isset($_GET['homework_id'])) {
-    $attachedTasks = Tasks::getAttachedTasks(
-        $connection,
-        $_GET['homework_id']
-    );
-} else {
-    die("No Id in query parameter");
-}
-
-
+$attempts = Attempts::getByHomework($connection, $_GET['homework_id'])
 
 ?>
 <!DOCTYPE html>
@@ -71,7 +68,7 @@ if (isset($_GET['homework_id'])) {
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a href="main.php" class="tabs-tab ">Курсы</a>
+                <a href="main.php" class="tabs-tab tabs-tab_active">Курсы</a>
             </li>
             <li>
                 <a href="/common/accessRequest.php  " class="tabs-tab ">Запросить доступ</a>
@@ -83,62 +80,42 @@ if (isset($_GET['homework_id'])) {
     </div>
 </header>
 <main class="dark-grey-background">
-    <div class="main__content mt4rem">
-        <?php
-        foreach ($attachedTasks as $task): ?>
-            <div class="login__modal w40p  mb1rem ">
-                <div class="login__header"><?= $task['title'] ?></div>
-                <form method="post" class="login__form">
-                    <p><?= $task['description'] ?></p>
-                    <?php
-                    if ($task['type'] === 'single_choice'): ?>
-                        <div class="radio flex-radio">
-                            <?php
-                            foreach (explode(',', substr($task['options'], 1, -1)) as $option): ?>
-                                <label class="radio-label mb5px">
-                                    <input type="radio" name="user_input[]" value="<?= $option ?>">
-                                    <?= $option ?>
-                                </label>
-                            <?php
-                            endforeach; ?>
-                        </div>
-                    <?php
-                    elseif ($task['type'] === 'multiple_choice'): ?>
-                        <div class="radio flex-radio">
-                            <?php
-                            foreach (explode(',', substr($task['options'], 1, -1)) as $option): ?>
-                                <label class="label-input mb5px">
-                                    <input type="checkbox" name="user_input[]" value="<?= $option ?>"/>
-                                    <?= $option ?>
-                                </label>
-                            <?php
-                            endforeach; ?>
-                        </div>
-                    <?php
-                    else: ?>
-                        <input type="text" class="login__form-input" name="user_input[]" placeholder="Ответ"/>
-                    <?php
-                    endif ?>
-                    <?php
-                    if (isset($task['max_score'])):
-                        ?>
-                        <div class="role">Количество баллов: <?= $task['max_score'] ?></div>
-                    <?php
-                    endif ?>
-                    <input type="hidden" name="id" value="<?= $task['id'] ?>">
-                </form>
+    <div class="main__content">
+        <div class="login__modal mt6rem mb6rem width-auto dark-slay-gray padding-20-20 ">
+            <table class="tg">
+                <thead>
+                <tr>
+                    <th class="tg-amwm">Студент</th>
+                    <th class="tg-amwm">Попытка</th>
+                    <th class="tg-amwm">Баллы</th>
+                    <th class="tg-amwm">Время</th>
+                    <th class="tg-amwm"></th>
+                </tr>
+                </thead>
+                <tbody>
                 <?php
-                if (!empty($error)) : ?>
-                    <p class="errorMessage"><?= $error ?></p>
+                $isOdd = true;
+                foreach ($attempts as $attempt):
+                    $rowClass = $isOdd ? 'tg-0lax' : 'tg-hmp3';
+                    $isOdd = !$isOdd;
+                    ?>
+                    <tr>
+                        <td class="<?= $rowClass ?>"><?= $attempt['user_id'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $attempt['attempt_number'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $attempt['score'] ?></td>
+                        <td class="<?= $rowClass ?>"><?= $attempt['submission_time'] ?></td>
+                        <td class="<?= $rowClass ?>">
+                            <a href="../common/resultHomework.php?attempt_id=<?= urlencode(base64_encode($attempt['attempt_id'])) ?>">
+                                <button class="table-button">Смотреть
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
                 <?php
-                endif; ?>
-            </div>
-        <?php
-        endforeach; ?>
-        <form method="post" class="register__modal mt1rem mb6rem">
-            <button name="toSendHomework" class="register__modal-link">Отправить
-            </button>
-        </form>
+                endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 <footer>
@@ -147,6 +124,6 @@ if (isset($_GET['homework_id'])) {
         <a class="github_link" href="https://github.com/SakhnoYA">Мой гитхаб</a>
     </div>
 </footer>
-<script src="/js/checkHomework.js"></script>
+
 </body>
 </html>

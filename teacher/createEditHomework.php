@@ -120,16 +120,10 @@ if (isset($_GET['homework_id'])) {
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a href="../common/main.php" class="tabs-tab">Пользователи</a>
+                <a href="main.php" class="tabs-tab ">Курсы</a>
             </li>
             <li>
-                <a href="registrations.php" class="tabs-tab">Регистрации</a>
-            </li>
-            <li>
-                <a class="tabs-tab tabs-tab_active">Создание курса</a>
-            </li>
-            <li>
-                <a href="accessRequests.php" class="tabs-tab">Запросы доступа</a>
+                <a href="/common/accessRequest.php  " class="tabs-tab ">Запросить доступ</a>
             </li>
         </ul>
         <form method="post">

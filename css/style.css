@@ -438,7 +438,6 @@ textarea {
     position: relative;
     display: inline-block;
     margin-left: 5px;
-    /*border-bottom: 1px dotted black; !* If you want dots under the hoverable text *!*/
 }
 
 /* Tooltip text */
@@ -497,5 +496,15 @@ textarea {
 }
 
 .mb5px{
+    margin-bottom: 5px;
+}
+
+.correct{
+    border: 8px solid green;
+}
+.wrong{
+    border: 8px solid red;
+}
+.role{
     margin-bottom: 5px;
 }

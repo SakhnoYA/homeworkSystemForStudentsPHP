@@ -1,7 +1,8 @@
 window.addEventListener('DOMContentLoaded', () => {
     const button = document.querySelector('button[name="toSendHomework"]');
 
-    button.addEventListener('click', () => {
+    button.addEventListener('click', (e) => {
+        e.preventDefault();
         collectAllFormData();
     });
 });
@@ -27,9 +28,25 @@ function collectAllFormData() {
             const mergedValue = values.join(' ');
             formDatas.append(name, mergedValue);
         }
-    })
+    });
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/common/checkHomework.php'.concat(window.location.search), true);
-    xhr.send(formDatas);
+    const requestOptions = {
+        method: 'POST',
+        body: formDatas,
+    };
+
+    fetch('/common/checkHomework.php' + window.location.search, requestOptions)
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Json error.');
+            }
+        })
+        .then((data) => {
+            window.location.href = '/common/resultHomework.php?attempt_id=' + data.attempt_id;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 }

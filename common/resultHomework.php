@@ -2,9 +2,9 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Autoloader.php';
 
+use Classes\Attempts;
 use Classes\Auth;
 use Classes\Autoloader;
-use Classes\Courses;
 use Classes\Database;
 use Classes\Session;
 use Classes\Url;
@@ -12,35 +12,24 @@ use Classes\Url;
 Autoloader::register();
 Session::start();
 
-if (!(Auth::checkUserType('teacher') || Auth::checkUserType('student'))) {
+if (!(Auth::checkUserType('student') || Auth::checkUserType('teacher'))) {
     Url::redirect('basic/forbidden.php');
 }
 
-try {
-    $connection = (new Database())->getDbConnection();
-    $unattachedCourses = Courses::getUnattachedCourses($connection, $_SESSION['user_id']);
-    $attachedCourses = Courses::getAttachedCourses($connection, $_SESSION['user_id']);
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['logout'])) {
-            Session::destroySession();
-            Url::redirect('index.php');
-        }
-        if (isset($_POST['attachCourses'])) {
-            foreach ($_POST['attachCourses'] as $course) {
-                Courses::attachCourseToUser($connection, $_SESSION['user_id'], $course);
-            }
-        }
-        if (isset($_POST['detachCourses'])) {
-            foreach ($_POST['detachCourses'] as $course) {
-                Courses::detachCourseFromUser($connection, $_SESSION['user_id'], $course);
-            }
-        }
-        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
+$connection = (new Database())->getDbConnection();
+//try {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['logout'])) {
+        Session::destroySession();
+        Url::redirect('index.php');
     }
-} catch (PDOException $e) {
-    $error = "Произошла ошибка базы данных: " . $e->getMessage();
 }
 
+if (isset($_GET['attempt_id'])) {
+    $attemptContent = Attempts::getContent($connection, base64_decode(urldecode($_GET['attempt_id'])));
+} else {
+    die("No Id in query parameter");
+}
 
 ?>
 <!DOCTYPE html>
@@ -81,7 +70,7 @@ try {
                    tabs-tab">Курсы</a>
             </li>
             <li>
-                <a class="tabs-tab tabs-tab_active">Запросить доступ</a>
+                <a class="tabs-tab ">Запросить доступ</a>
             </li>
         </ul>
         <form method="post">
@@ -90,39 +79,22 @@ try {
     </div>
 </header>
 <main class="dark-grey-background">
-    <div class="main__content">
-        <div class="login__modal mt6rem mb6rem">
-            <div class="login__header fs18">Запрос</div>
-            <form class="login__form accessRequestForm" method="post">
-                <div class="dropdown-check-list" tabindex="100">
-                    <span class="anchor">Прикрепить к курсу</span>
-                    <ul class="items">
-                        <?php
-                        foreach ($unattachedCourses as $course): ?>
-                            <li><input type="checkbox" name="attachCourses[]"
-                                       value="<?= $course['id'] ?>"/><?= $course['title'] ?></li>
-                        <?php
-                        endforeach; ?>
-                    </ul>
-                </div>
-                <div class="dropdown-check-list mt1rem mb1rem" tabindex="100">
-                    <span class="anchor">Открепить от курса</span>
-                    <ul class="items">
-                        <?php
-                        foreach ($attachedCourses as $course): ?>
-                            <li><input type="checkbox" name="detachCourses[]"
-                                       value="<?= $course['id'] ?>"/><?= $course['title'] ?></li>
-                        <?php
-                        endforeach; ?>
-                    </ul>
-                </div>
-                <button type="submit" class="register__modal-link">Отправить</button>
-            </form>
-            <?php
-            if (!empty($error)) : ?>
-                <p class="errorMessage"><?= $error ?></p>
-            <?php
-            endif; ?>
+    <div class="main__content mt4rem">
+        <?php
+        foreach ($attemptContent as $task): ?>
+            <div class="login__modal w40p  mb1rem  <?= $task['is_correct'] ? 'correct' : 'wrong' ?> ">
+                <div class="login__header"><?= $task['title'] ?></div>
+                <p><?= $task['description'] ?></p>
+                <div class="role">Ответ студента: <?= $task['user_input'] ?></div>
+                <div class="role">Правильный ответ: <?= $task['answer'] ?></div>
+                <div class="role">Количество баллов: <?= $task['max_score'] ?></div>
+            </div>
+        <?php
+        endforeach; ?>
+        <div class="register__modal mt1rem mb6rem">
+            <button name="<?= $_SESSION['user_type'] === 'student' ? 'toMain' : 'toBack' ?>"
+                    class="register__modal-link">Вернуться
+            </button>
         </div>
     </div>
 </main>
@@ -132,6 +104,19 @@ try {
         <a class="github_link" href="https://github.com/SakhnoYA">Мой гитхаб</a>
     </div>
 </footer>
-<script src="/js/script.js"></script>
 </body>
+<script>window.addEventListener('DOMContentLoaded', () => {
+        const button = document.querySelector('button.register__modal-link');
+        button.addEventListener('click', redirect);
+
+        function redirect() {
+            if (button.name === 'toBack') {
+                window.history.back();
+            } else {
+                window.location.href = '/student/main.php';
+            }
+        }
+
+    });
+</script>
 </html>

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if (isset($_POST['toCreateHomework'])) {
         $_SESSION['ids'] = [];
-        unset($_SESSION['lastHomeworkID'],$_SESSION['form0'],$_SESSION['form1']);
+        unset($_SESSION['lastHomeworkID'], $_SESSION['form0'], $_SESSION['form1']);
         Url::redirect('teacher/createEditHomework.php', queryString: "course_id=" . $_GET['id']);
     }
     if (isset($_POST['toUpdateHomework'])) {
@@ -40,7 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['toDeleteHomework'])) {
         Homeworks::delete($connection, ['id' => $_POST['homework_id']]);
     }
-    if (isset($_POST['title'])) {
+    if (isset($_POST['toResultCourse'])) {
+        Url::redirect(
+            'teacher/result.php',
+            queryString: "homework_id=" . $_POST['homework_id']
+        );
+    }
+    if (isset($_POST['toUpdateCourse'])) {
         $connection = (new Database())->getDbConnection();
         Courses::update(
             $connection,
@@ -49,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ['id' => $_GET['id']]
         );
     }
-        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
+    Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
 }
 if (isset($_GET['id'])) {
     $course = Courses::get(
@@ -64,9 +70,7 @@ if (isset($_GET['id'])) {
 //} catch (PDOException $e) {
 //    $error = "Произошла ошибка базы данных: " . $e->getCode();
 //}
-echo "<pre>";
-print_r($_SESSION);
-echo "</pre>";
+
 
 ?>
 <!DOCTYPE html>
@@ -102,16 +106,10 @@ echo "</pre>";
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a href="../common/main.php" class="tabs-tab">Пользователи</a>
+                <a href="main.php" class="tabs-tab">Курсы</a>
             </li>
             <li>
-                <a href="registrations.php" class="tabs-tab">Регистрации</a>
-            </li>
-            <li>
-                <a class="tabs-tab">Создание курса</a>
-            </li>
-            <li>
-                <a href="accessRequests.php" class="tabs-tab">Запросы доступа</a>
+                <a href="/common/accessRequest.php  " class="tabs-tab ">Запросить доступ</a>
             </li>
         </ul>
         <form method="post">
@@ -179,7 +177,7 @@ echo "</pre>";
                 <input type="hidden" name="updated_by" value="<?= $_SESSION['user_id'] ?>">
                 <input type="hidden" name="updated_at" value="<?php
                 echo date('Y-m-d'); ?>">
-                <button type="submit" class="enter__link mt1rem">Сохранить</button>
+                <button type="submit" class="enter__link mt1rem" name="toUpdateCourse">Сохранить</button>
             </form>
             <?php
             if (!empty($error)) : ?>
@@ -243,8 +241,8 @@ echo "</pre>";
                         </td>
                         <td class="<?= $rowClass ?>">
                             <form method="post">
-                                <input type="hidden" name="course_id" value="<?= $homework['id'] ?>">
-                                <button class="table-button" name="confirmation" value="confirmed">Результаты
+                                <input type="hidden" name="homework_id" value="<?= $homework['id'] ?>">
+                                <button class="table-button" name="toResultCourse">Результаты
                                 </button>
                             </form>
                         </td>

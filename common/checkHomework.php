@@ -18,3 +18,7 @@ foreach ($_POST as $task) {
 }
 Attempts::attachAttemptToHomeworkUser($connection, $_SESSION['user_id'], $_GET['homework_id'], $lastAttemptId);
 
+$response = ['attempt_id' => urlencode(base64_encode($lastAttemptId))];
+header('Content-Type: application/json');
+echo json_encode($response);
+exit;

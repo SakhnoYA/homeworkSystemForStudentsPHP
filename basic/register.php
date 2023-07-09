@@ -2,12 +2,12 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Autoloader.php';
 
-use \Classes\Auth;
-use \Classes\Autoloader;
-use \Classes\Database;
-use \Classes\Session;
-use \Classes\Url;
-use \Classes\Users;
+use Classes\Auth;
+use Classes\Autoloader;
+use Classes\Database;
+use Classes\Session;
+use Classes\Url;
+use Classes\Users;
 
 Autoloader::register();
 Session::start();

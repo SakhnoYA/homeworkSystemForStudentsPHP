@@ -51,4 +51,72 @@ class Attempts
 
         $stmt->execute();
     }
+
+    public static function getLastAttempt(
+        PDO $connection,
+        int $user_id,
+        int $homework_id
+    ): int {
+        $sql = "SELECT attempt_id FROM user_homework_attempts WHERE user_id = :user_id AND homework_id = :homework_id ORDER BY attempt_id DESC LIMIT 1";
+
+        $stmt = $connection->prepare($sql);
+
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':homework_id', $homework_id);
+
+        $stmt->execute();
+
+        return (int)$stmt->fetchColumn();
+    }
+
+    public static function getScore(
+        PDO $connection,
+        int $attempt_id,
+    ): int {
+        $sql = "SELECT score FROM attempts WHERE id = :attempt_id";
+
+        $stmt = $connection->prepare($sql);
+
+        $stmt->bindParam(':attempt_id', $attempt_id);
+
+        $stmt->execute();
+
+        return (int)$stmt->fetchColumn();
+    }
+
+    public static function getContent(PDO $connection, int $attempt_id): array
+    {
+        $sql = "SELECT * FROM attempt_inputs AS ai JOIN tasks AS t ON ai.task_id = t.id WHERE ai.attempt_id = :attempt_id";
+
+        $stmt = $connection->prepare($sql);
+        $stmt->bindValue(':attempt_id', $attempt_id);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function getByHomework(PDO $connection, int $homework_id): array {
+        $sql = "SELECT user_id,
+      CASE
+        WHEN ROW_NUMBER() OVER (ORDER BY attempt_id) = 1 THEN 'первая'
+        WHEN ROW_NUMBER() OVER (ORDER BY attempt_id) = 2 THEN 'вторая'
+        WHEN ROW_NUMBER() OVER (ORDER BY attempt_id) = 3 THEN 'третья'
+        ELSE 'другая'
+      END AS attempt_number,
+      score, submission_time, attempt_id
+    FROM user_homework_attempts 
+    JOIN attempts  ON attempt_id = id
+    WHERE homework_id = :homework_id";
+
+        $stmt = $connection->prepare($sql);
+
+        $stmt->bindParam(':homework_id', $homework_id);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
 }

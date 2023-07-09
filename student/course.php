@@ -23,10 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         Session::destroySession();
         Url::redirect('index.php');
     }
-    if(isset($_POST['toSolve'])){
+    if (isset($_POST['toSolve'])) {
         Url::redirect(
             'student/homework.php',
-            queryString: "homework_id=" . $_POST['homework_id']
+            queryString: "homework_id=" . $_POST['homework_id'] . "&course_id=" . $_GET['id']
         );
     }
 //        Url::redirect(substr($_SERVER['PHP_SELF'], 1), queryString: $_SERVER['QUERY_STRING']);
@@ -74,16 +74,10 @@ if (isset($_GET['id'])) {
         <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
         <ul class="tabs">
             <li>
-                <a href="../common/main.php" class="tabs-tab">Пользователи</a>
+                <a href="main.php" class="tabs-tab ">Курсы</a>
             </li>
             <li>
-                <a href="registrations.php" class="tabs-tab">Регистрации</a>
-            </li>
-            <li>
-                <a class="tabs-tab">Создание курса</a>
-            </li>
-            <li>
-                <a href="accessRequests.php" class="tabs-tab">Запросы доступа</a>
+                <a href="/common/accessRequest.php  " class="tabs-tab ">Запросить доступ</a>
             </li>
         </ul>
         <form method="post">
