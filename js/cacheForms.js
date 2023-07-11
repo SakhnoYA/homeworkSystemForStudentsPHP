@@ -8,7 +8,8 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function collectAllFormData(forms) {
+function collectAllFormData(forms)
+{
     const formDatas = new FormData();
     forms.forEach((form, index) => {
         const formData = new FormData(form);

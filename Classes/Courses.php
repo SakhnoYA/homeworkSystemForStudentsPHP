@@ -103,12 +103,20 @@ class Courses
     }
 
 
-    public static function getAttachedCourses(PDO $connection, int $id, ?bool $is_confirmed = null): array
-    {
+    public static function getAttachedCourses(
+        PDO $connection,
+        int $id,
+        ?bool $is_confirmed = null,
+        ?bool $availability = null
+    ): array {
         $sql = "SELECT * FROM user_courses JOIN courses ON courses.id = user_courses.course_id WHERE user_courses.user_id = :id";
 
         if ($is_confirmed !== null) {
             $sql .= " AND user_courses.is_confirmed = :is_confirmed";
+        }
+
+        if ($availability !== null) {
+            $sql .= " AND availability = :availability";
         }
 
         $stmt = $connection->prepare($sql);
@@ -117,6 +125,10 @@ class Courses
 
         if ($is_confirmed !== null) {
             $stmt->bindValue(':is_confirmed', $is_confirmed);
+        }
+
+        if ($availability !== null) {
+            $stmt->bindValue(':availability', $availability, PDO::PARAM_BOOL);
         }
 
         $stmt->execute();

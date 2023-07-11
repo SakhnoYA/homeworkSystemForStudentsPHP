@@ -34,33 +34,33 @@ class Users
         $stmt->execute();
     }
 
-    public static function get(
-        PDO $connection,
-        array $columnsSELECT = [],
-        array $optionsWHERE = []
-    ): array {
-        $columnsString = !empty($columnsSELECT) ? implode(', ', $columnsSELECT) : '*';
-
-        if (!empty($optionsWHERE)) {
-            $whereClause = implode(
-                'AND ',
-                array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
-            );
-            $sql = "SELECT $columnsString FROM users WHERE ($whereClause)";
-            $stmt = $connection->prepare($sql);
-
-            foreach ($optionsWHERE as $column => $value) {
-                $stmt->bindValue(':' . $column, $value);
-            }
-        } else {
-            $sql = "SELECT $columnsString FROM users";
-            $stmt = $connection->prepare($sql);
-        }
-
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+//    public static function get(
+//        PDO $connection,
+//        array $columnsSELECT = [],
+//        array $optionsWHERE = []
+//    ): array {
+//        $columnsString = !empty($columnsSELECT) ? implode(', ', $columnsSELECT) : '*';
+//
+//        if (!empty($optionsWHERE)) {
+//            $whereClause = implode(
+//                'AND ',
+//                array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
+//            );
+//            $sql = "SELECT $columnsString FROM users WHERE ($whereClause)";
+//            $stmt = $connection->prepare($sql);
+//
+//            foreach ($optionsWHERE as $column => $value) {
+//                $stmt->bindValue(':' . $column, $value);
+//            }
+//        } else {
+//            $sql = "SELECT $columnsString FROM users";
+//            $stmt = $connection->prepare($sql);
+//        }
+//
+//        $stmt->execute();
+//
+//        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+//    }
 
     public static function getWithJoinUserType(
         PDO $connection,

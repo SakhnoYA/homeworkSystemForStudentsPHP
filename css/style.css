@@ -477,6 +477,8 @@ textarea {
 
 .dark-slay-gray{
     background-color: darkslategrey;
+    color:white;
+    font-weight: 500;
 }
 
 .padding-20-20{

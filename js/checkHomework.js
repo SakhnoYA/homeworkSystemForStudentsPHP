@@ -7,7 +7,8 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function collectAllFormData() {
+function collectAllFormData()
+{
     const forms = document.querySelectorAll('form.login__form');
     const formDatas = new FormData();
 
