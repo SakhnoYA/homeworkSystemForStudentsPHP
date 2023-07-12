@@ -1,19 +1,19 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Classes/Autoloader.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/php/Classes/Autoloader.php';
 
-use Classes\Auth;
-use Classes\Autoloader;
-use Classes\Database;
-use Classes\Session;
-use Classes\Url;
+use php\Classes\Auth;
+use php\Classes\Autoloader;
+use php\Classes\Database;
+use php\Classes\Session;
+use php\Classes\Url;
 
 Autoloader::register();
 Session::start();
 
 
 if (Auth::isAuthenticated()) {
-    Url::redirect($_SESSION['user_type'] . '/main.php');
+    Url::redirect('php/' . $_SESSION['user_type'] . '/main.php');
 }
 
 try {
@@ -28,7 +28,7 @@ try {
         ) {
             if (Auth::isConfirmed($connection, $_POST['login'])) {
                 Auth::login($connection, $_POST['login']);
-                Url::redirect($_SESSION['user_type'] . '/main.php');
+                Url::redirect('php/' . $_SESSION['user_type'] . '/main.php');
             } else {
                 $error = "Ваш профиль не подтвержден администратором";
             }
@@ -66,7 +66,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
             </div>
             <div class="register__modal mt1rem">
                 <div class="register__header">Или</div>
-                <a href="/basic/register.php" class="register__modal-link">Зарегистрироваться</a>
+                <a href="/php/basic/register.php" class="register__modal-link">Зарегистрироваться</a>
             </div>
         </div>
     </main>
