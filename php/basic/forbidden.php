@@ -22,7 +22,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                 <div class="login__header">Извините, вы не имеете доступа к этой странице.</div>
             </div>
             <div class="register__modal mt1rem ">
-                <a href="/php/basicasic/register.php" class="register__modal-link">Зарегистрироваться</a>
+                <a href="/php/basic/register.php" class="register__modal-link">Зарегистрироваться</a>
             </div>
         </div>
     </main>

@@ -47,7 +47,7 @@ class Users
                 array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
             );
             $sql = "SELECT $columnsString, user_types.readable_name FROM users
-            JOIN user_types ON user_types.type_id = users.type WHERE ($whereClause)";
+            JOIN user_types ON user_types.type_id = users.type WHERE ($whereClause) and user_types.type_id <> 1";
             $stmt = $connection->prepare($sql);
 
             foreach ($optionsWHERE as $column => $value) {
@@ -55,7 +55,7 @@ class Users
             }
         } else {
             $sql = "SELECT $columnsString, user_types.readable_name FROM users
-            JOIN user_types ON user_types.type_id = users.type";
+            JOIN user_types ON user_types.type_id = users.type WHERE user_types.type_id <> 1";
             $stmt = $connection->prepare($sql);
         }
 

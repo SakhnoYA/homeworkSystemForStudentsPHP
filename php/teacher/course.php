@@ -138,14 +138,14 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                     <label class="label-input"> Сложность <select name="difficulty_level"
                                                                   class="login__form-input mt7px">
                             <option <?= $course[0]['difficulty_level'] === null ? 'selected' : '' ?>></option>
-                            <option <?= $course[0]['difficulty_level'] === 'easy' ? 'selected' : '' ?>
-                                    value="easy">Легкий уровень
+                            <option <?= $course[0]['difficulty_level'] === 'Легкий уровень' ? 'selected' : '' ?>
+                                    value="Легкий уровень">Легкий уровень
                             </option>
-                            <option <?= $course[0]['difficulty_level'] === 'medium' ? 'selected' : '' ?>
-                                    value="medium">Средний уровень
+                            <option <?= $course[0]['difficulty_level'] === 'Средний уровень' ? 'selected' : '' ?>
+                                    value="Средний уровень">Средний уровень
                             </option>
-                            <option <?= $course[0]['difficulty_level'] === 'hard' ? 'selected' : '' ?>
-                                    value="hard">Сложный уровень
+                            <option <?= $course[0]['difficulty_level'] === 'Сложный уровень' ? 'selected' : '' ?>
+                                    value="Сложный уровень">Сложный уровень
                             </option>
                         </select></label>
                     <label class="label-input">

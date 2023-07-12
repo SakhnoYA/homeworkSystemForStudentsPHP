@@ -38,7 +38,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
             <img src="/images/icon.png" class="header-logo" alt="Homework System logo">
             <ul class="tabs">
                 <li>
-                    <a href="<?= $_SESSION['user_type'] === 'teacher' ? '/teacher/main.php' : '/student/main.php' ?>"
+                    <a href="<?= $_SESSION['user_type'] === 'teacher' ? '/php/teacher/main.php' : '/php/student/main.php' ?>"
                        class="
                    tabs-tab">Курсы</a>
                 </li>

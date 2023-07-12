@@ -52,7 +52,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                 <?php
                 if (empty($confirmedAttachedCourses)) : ?>
                     Прикрепления к курсам отсутствуют. Пожалуйста, запросите доступ.
-                <?php
+                    <?php
                 else : ?>
                     <table class="tg">
                         <thead>
@@ -81,17 +81,17 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                 <td class="<?= $rowClass ?>"><?= $course['difficulty_level'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $course['category'] ?></td>
                                 <td class="<?= $rowClass ?>">
-                                    <a href="?id=<?= $course['id'] ?>">
+                                    <a href="course.php?id=<?= $course['id'] ?>">
                                         <button class="table-button">Решать
                                         </button>
                                     </a>
                                 </td>
                             </tr>
-                        <?php
+                            <?php
                         endforeach; ?>
                         </tbody>
                     </table>
-                <?php
+                    <?php
                 endif; ?>
             </div>
         </div>

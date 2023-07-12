@@ -71,10 +71,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                         <input type="radio" name="user_input[]" value="<?= $option ?>">
                                         <?= $option ?>
                                     </label>
-                                <?php
+                                    <?php
                                 endforeach; ?>
                             </div>
-                        <?php
+                            <?php
                         elseif ($task['type'] === 'multiple_choice') : ?>
                             <div class="radio flex-radio">
                                 <?php
@@ -83,24 +83,24 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                         <input type="checkbox" name="user_input[]" value="<?= $option ?>"/>
                                         <?= $option ?>
                                     </label>
-                                <?php
+                                    <?php
                                 endforeach; ?>
                             </div>
-                        <?php
+                            <?php
                         else : ?>
                             <input type="text" class="login__form-input" name="user_input[]" placeholder="Ответ"/>
-                        <?php
+                            <?php
                         endif ?>
                         <?php
                         if (isset($task['max_score'])) :
                             ?>
                             <div class="role">Количество баллов: <?= $task['max_score'] ?></div>
-                        <?php
+                            <?php
                         endif ?>
                         <input type="hidden" name="id" value="<?= $task['id'] ?>">
                     </form>
                 </div>
-            <?php
+                <?php
             endforeach; ?>
             <form method="post" class="register__modal mt1rem mb6rem">
                 <button name="toSendHomework" class="register__modal-link">Отправить

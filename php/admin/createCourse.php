@@ -97,13 +97,13 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                                                    class="login__form-input mt7px">
                             <option></option>
                             <option
-                                    value="easy">Легкий уровень
+                                    value="Легкий уровень">Легкий уровень
                             </option>
                             <option
-                                    value="medium">Средний уровень
+                                    value="Средний уровень">Средний уровень
                             </option>
                             <option
-                                    value="hard">Сложный уровень
+                                    value="Сложный уровень">Сложный уровень
                             </option>
                         </select></label>
                     <textarea name="description" class="login__form-input h200" maxlength="50"
