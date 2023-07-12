@@ -6,6 +6,7 @@ use Classes\Auth;
 use Classes\Autoloader;
 use Classes\Database;
 use Classes\Homeworks;
+use Classes\Attempts;
 use Classes\Session;
 use Classes\Url;
 
@@ -98,11 +99,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                 <td class="<?= $rowClass ?>"><?= $homework['start_date'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $homework['end_date'] ?></td>
                                 <td class="<?= $rowClass ?>">
-                                    <form method="post">
-                                        <input type="hidden" name="homework_id" value="<?= $homework['id'] ?>">
-                                        <button class="table-button" name="toSolve">Решать
-                                        </button>
-                                    </form>
+                                    <?php
+                                    if (Attempts::getCount(
+                                            $connection,
+                                            $_SESSION['user_id'],
+                                            $homework['id']
+                                        ) < $homework['max_attempts']): ?>
+                                        <form method="post">
+                                            <input type="hidden" name="homework_id" value="<?= $homework['id'] ?>">
+                                            <button class="table-button" name="toSolve">Решать
+                                            </button>
+                                        </form>
+                                    <?php
+                                    else: ?>
+                                        <div class="table-button">Попытки закончились</div>
+                                    <?php
+                                    endif; ?>
                                 </td>
                             </tr>
                         <?php

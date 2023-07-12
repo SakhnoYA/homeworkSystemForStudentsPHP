@@ -52,32 +52,17 @@ class Attempts
         $stmt->execute();
     }
 
-    public static function getLastAttempt(
+    public static function getCount(
         PDO $connection,
         int $user_id,
         int $homework_id
     ): int {
-        $sql = "SELECT attempt_id FROM user_homework_attempts WHERE user_id = :user_id AND homework_id = :homework_id ORDER BY attempt_id DESC LIMIT 1";
+        $sql = "SELECT COUNT(attempt_id) FROM user_homework_attempts WHERE user_id = :user_id AND homework_id = :homework_id";
 
         $stmt = $connection->prepare($sql);
 
         $stmt->bindParam(':user_id', $user_id);
         $stmt->bindParam(':homework_id', $homework_id);
-
-        $stmt->execute();
-
-        return (int)$stmt->fetchColumn();
-    }
-
-    public static function getScore(
-        PDO $connection,
-        int $attempt_id,
-    ): int {
-        $sql = "SELECT score FROM attempts WHERE id = :attempt_id";
-
-        $stmt = $connection->prepare($sql);
-
-        $stmt->bindParam(':attempt_id', $attempt_id);
 
         $stmt->execute();
 
@@ -96,7 +81,8 @@ class Attempts
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public static function getByHomework(PDO $connection, int $homework_id): array {
+    public static function getByHomework(PDO $connection, int $homework_id): array
+    {
         $sql = "SELECT user_id,
       CASE
         WHEN ROW_NUMBER() OVER (ORDER BY attempt_id) = 1 THEN 'первая'

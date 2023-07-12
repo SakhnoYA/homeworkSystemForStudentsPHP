@@ -70,7 +70,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                             <td class="<?= $rowClass ?>"><?= $attempt['user_id'] ?></td>
                             <td class="<?= $rowClass ?>"><?= $attempt['attempt_number'] ?></td>
                             <td class="<?= $rowClass ?>"><?= $attempt['score'] ?></td>
-                            <td class="<?= $rowClass ?>"><?= $attempt['submission_time'] ?></td>
+                            <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($attempt['submission_time'])) ?></td>
                             <td class="<?= $rowClass ?>">
                                 <a href="../common/resultHomework.php?attempt_id=<?= urlencode(
                                     base64_encode($attempt['attempt_id'])

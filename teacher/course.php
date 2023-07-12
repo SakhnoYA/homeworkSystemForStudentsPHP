@@ -117,22 +117,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                     </label>
                     <label class="label-input mb16px">
                         <input type="checkbox" name="availability"
-                               checked="<?= $course[0]['availability'] ? 'checked' : '' ?>"/>
+                            <?= $course[0]['availability'] ? 'checked' : '' ?>/>
                         Доступен
                     </label>
                     <label class="label-input "> Категория <select name="category" class="login__form-input mt7px">
                             <option <?= $course[0]['category'] === null ? 'selected' : '' ?> ></option>
-                            <option <?= $course[0]['category'] === 'natural' ? 'selected' : '' ?>
-                                    value="natural">Естественные науки
+                            <option <?= $course[0]['category'] === 'Естественные науки' ? 'selected' : '' ?>
+                                    value="Естественные науки">Естественные науки
                             </option>
-                            <option <?= $course[0]['category'] === 'exact' ? 'selected' : '' ?>
-                                    value="exact">Точные науки
+                            <option <?= $course[0]['category'] === 'Точные науки' ? 'selected' : '' ?>
+                                    value="Точные науки">Точные науки
                             </option>
-                            <option <?= $course[0]['category'] === 'technical' ? 'selected' : '' ?>
-                                    value="technical">Технические науки
+                            <option <?= $course[0]['category'] === 'Технические науки' ? 'selected' : '' ?>
+                                    value="Технические науки">Технические науки
                             </option>
-                            <option <?= $course[0]['category'] === 'socialHumanities' ? 'selected' : '' ?>
-                                    value="socialHumanities">Социально-гуманитарные науки
+                            <option <?= $course[0]['category'] === 'Социально-гуманитарные науки' ? 'selected' : '' ?>
+                                    value="Социально-гуманитарные науки">Социально-гуманитарные науки
                             </option>
                         </select></label>
                     <label class="label-input"> Сложность <select name="difficulty_level"
@@ -182,8 +182,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                             <th class="tg-amwm">Проходные баллы</th>
                             <th class="tg-amwm">Дата начала</th>
                             <th class="tg-amwm">Дата конца</th>
-                            <th class="tg-amwm">Дата создания</th>
-                            <th class="tg-amwm">Дата обновления</th>
+                            <th class="tg-amwm">Время создания</th>
+                            <th class="tg-amwm">Время обновления</th>
                             <th class="tg-amwm">Создал ID</th>
                             <th class="tg-amwm">Обновил ID</th>
                             <th class="tg-amwm"></th>
@@ -207,8 +207,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                 <td class="<?= $rowClass ?>"><?= $homework['passing_marks'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $homework['start_date'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $homework['end_date'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $homework['created_at'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $homework['updated_at'] ?></td>
+                                <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($homework['created_at'])) ?></td>
+                                <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($homework['updated_at'])) ?></td>
                                 <td class="<?= $rowClass ?>"><?= $homework['created_by'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $homework['updated_by'] ?></td>
                                 <td class="<?= $rowClass ?>">

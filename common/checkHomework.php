@@ -21,7 +21,7 @@ try {
 
     $response = ['attempt_id' => urlencode(base64_encode($lastAttemptId))];
     header('Content-Type: application/json');
-    json_encode($response, JSON_THROW_ON_ERROR);
+    echo json_encode($response, JSON_THROW_ON_ERROR);
 } catch (JsonException $e) {
     die("Произошла ошибка: " . $e->getMessage());
 }

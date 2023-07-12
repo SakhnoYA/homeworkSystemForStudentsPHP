@@ -65,8 +65,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                             <th class="tg-amwm">Уровень сложности</th>
                             <th class="tg-amwm">Категория</th>
                             <th class="tg-amwm">Доступность</th>
-                            <th class="tg-amwm">Дата создания</th>
-                            <th class="tg-amwm">Дата обновления</th>
+                            <th class="tg-amwm">Время создания</th>
+                            <th class="tg-amwm">Время обновления</th>
                             <th class="tg-amwm">Обновил ID</th>
                             <th class="tg-amwm"></th>
                         </tr>
@@ -87,8 +87,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                 <td class="<?= $rowClass ?>"><?= $course['difficulty_level'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $course['category'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $course['availability'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $course['created_at'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $course['updated_at'] ?></td>
+                                <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($course['created_at'])) ?></td>
+                                <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($course['updated_at'])) ?></td>
                                 <td class="<?= $rowClass ?>"><?= $course['updated_by'] ?></td>
                                 <td class="<?= $rowClass ?>">
                                     <a href="../teacher/course.php?id=<?= $course['id'] ?>">

@@ -87,7 +87,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                         <thead>
                         <tr>
                             <th class="tg-amwm">ID</th>
-                            <th class="tg-amwm">Дата регистрации</th>
+                            <th class="tg-amwm">Время регистрации</th>
                             <th class="tg-amwm">Имя</th>
                             <th class="tg-amwm">Фамилия</th>
                             <th class="tg-amwm">Отчество</th>
@@ -105,7 +105,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                             ?>
                             <tr>
                                 <td class="<?= $rowClass ?>"><?= $user['id'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $user['registration_date'] ?></td>
+                                <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($user['registration_date'])) ?></td>
                                 <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>

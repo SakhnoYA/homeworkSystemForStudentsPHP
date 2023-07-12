@@ -81,16 +81,16 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                     <label class="label-input "> Категория <select name="category" class="login__form-input mt7px">
                             <option></option>
                             <option
-                                    value="natural">Естественные науки
+                                    value="Естественные науки">Естественные науки
                             </option>
                             <option
-                                    value="exact">Точные науки
+                                    value="Точные науки">Точные науки
                             </option>
                             <option
-                                    value="technical">Технические науки
+                                    value="Технические науки">Технические науки
                             </option>
                             <option
-                                    value="socialHumanities">Социально-гуманитарные науки
+                                    value="Социально-гуманитарные науки">Социально-гуманитарные науки
                             </option>
                         </select></label>
                     <label class="label-input "> Сложность <select name="difficulty_level"
