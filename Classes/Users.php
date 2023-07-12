@@ -6,7 +6,6 @@ use PDO;
 
 class Users
 {
-
     public static function create(PDO $connection, array $options): void
     {
         if (!array_key_exists("ip", $options)) {
@@ -31,36 +30,9 @@ class Users
         foreach ($options as $column => $value) {
             $stmt->bindValue(':' . $column, $value);
         }
+
         $stmt->execute();
     }
-
-//    public static function get(
-//        PDO $connection,
-//        array $columnsSELECT = [],
-//        array $optionsWHERE = []
-//    ): array {
-//        $columnsString = !empty($columnsSELECT) ? implode(', ', $columnsSELECT) : '*';
-//
-//        if (!empty($optionsWHERE)) {
-//            $whereClause = implode(
-//                'AND ',
-//                array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
-//            );
-//            $sql = "SELECT $columnsString FROM users WHERE ($whereClause)";
-//            $stmt = $connection->prepare($sql);
-//
-//            foreach ($optionsWHERE as $column => $value) {
-//                $stmt->bindValue(':' . $column, $value);
-//            }
-//        } else {
-//            $sql = "SELECT $columnsString FROM users";
-//            $stmt = $connection->prepare($sql);
-//        }
-//
-//        $stmt->execute();
-//
-//        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-//    }
 
     public static function getWithJoinUserType(
         PDO $connection,
@@ -74,14 +46,16 @@ class Users
                 'AND ',
                 array_map(static fn($column) => $column . ' = :' . $column, array_keys($optionsWHERE))
             );
-            $sql = "SELECT $columnsString, user_types.readable_name FROM users JOIN user_types ON user_types.type_id = users.type WHERE ($whereClause)";
+            $sql = "SELECT $columnsString, user_types.readable_name FROM users
+            JOIN user_types ON user_types.type_id = users.type WHERE ($whereClause)";
             $stmt = $connection->prepare($sql);
 
             foreach ($optionsWHERE as $column => $value) {
                 $stmt->bindValue(':' . $column, $value);
             }
         } else {
-            $sql = "SELECT $columnsString, user_types.readable_name FROM users JOIN user_types ON user_types.type_id = users.type";
+            $sql = "SELECT $columnsString, user_types.readable_name FROM users
+            JOIN user_types ON user_types.type_id = users.type";
             $stmt = $connection->prepare($sql);
         }
 
@@ -136,5 +110,4 @@ class Users
     {
         self::delete($connection, ['is_confirmed' => 0]);
     }
-
 }

@@ -5,14 +5,15 @@ namespace Classes;
 use Dotenv\Dotenv;
 use PDO;
 
-require __DIR__ . '/../vendor/autoload.php';
-Dotenv::createUnsafeImmutable(__DIR__ . '/../')->load();
 class Database
 {
     private PDO $dbConnection;
 
     public function __construct()
     {
+        require __DIR__ . '/../vendor/autoload.php';
+        Dotenv::createUnsafeImmutable(__DIR__ . '/../')->load();
+
         $dbHost = $_ENV['DB_HOST'];
         $dbName = $_ENV['DB_NAME'];
         $dbPort = $_ENV['DB_PORT'];

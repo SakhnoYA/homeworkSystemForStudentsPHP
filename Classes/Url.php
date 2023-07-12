@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpNoReturnAttributeCanBeAddedInspection */
 
 namespace Classes;
 
@@ -24,7 +23,7 @@ class Url
         } else {
             header("Location: $url");
         }
+
         exit;
     }
-
 }

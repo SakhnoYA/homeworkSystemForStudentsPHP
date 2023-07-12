@@ -17,16 +17,17 @@ class Tasks
         foreach ($options as $column => $value) {
             if (is_array($value)) {
                 $value = '{' . implode(
-                        ', ',
-                        preg_split('/\s+/', trim($value[0]))
-                    ) . '}';
+                    ', ',
+                    preg_split('/\s+/', trim($value[0]))
+                ) . '}';
                 $stmt->bindValue(':' . $column, $value);
             } else {
                 $stmt->bindValue(':' . $column, preg_replace('/\s+/', ' ', trim($value)));
             }
         }
-//        echo $sql;
+
         $stmt->execute();
+
         return (int)$connection->query("SELECT last_value FROM tasks_id_seq")->fetchColumn();
     }
 
@@ -53,7 +54,8 @@ class Tasks
 
     public static function getAttachedTasks(PDO $connection, int $id): array
     {
-        $sql = "SELECT * FROM homework_tasks JOIN tasks t ON t.id = homework_tasks.task_id WHERE homework_tasks.homework_id = :id";
+        $sql = "SELECT * FROM homework_tasks
+        JOIN tasks t ON t.id = homework_tasks.task_id WHERE homework_tasks.homework_id = :id";
 
         $stmt = $connection->prepare($sql);
 
@@ -96,9 +98,9 @@ class Tasks
         foreach ($optionsSET as $column => $value) {
             if (is_array($value)) {
                 $value = '{' . implode(
-                        ', ',
-                        preg_split('/\s+/', trim($value[0]))
-                    ) . '}';
+                    ', ',
+                    preg_split('/\s+/', trim($value[0]))
+                ) . '}';
                 $stmt->bindValue(':' . $column, $value);
             } else {
                 $stmt->bindValue(':' . $column, preg_replace('/\s+/', ' ', trim($value)));
@@ -128,6 +130,4 @@ class Tasks
 
         $stmt->execute();
     }
-
-
 }

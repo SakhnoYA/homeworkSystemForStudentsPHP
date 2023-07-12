@@ -68,7 +68,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                 <?php
                 if (empty($attachedHomeworks)) : ?>
                     Домашние задания отсутствуют
-                <?php
+                    <?php
                 else : ?>
                     <table class="tg">
                         <thead>
@@ -100,28 +100,30 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                 <td class="<?= $rowClass ?>"><?= $homework['end_date'] ?></td>
                                 <td class="<?= $rowClass ?>">
                                     <?php
-                                    if (Attempts::getCount(
+                                    if (
+                                        Attempts::getCount(
                                             $connection,
                                             $_SESSION['user_id'],
                                             $homework['id']
-                                        ) < $homework['max_attempts']): ?>
+                                        ) < $homework['max_attempts']
+                                    ) : ?>
                                         <form method="post">
                                             <input type="hidden" name="homework_id" value="<?= $homework['id'] ?>">
                                             <button class="table-button" name="toSolve">Решать
                                             </button>
                                         </form>
-                                    <?php
-                                    else: ?>
+                                        <?php
+                                    else : ?>
                                         <div class="table-button">Попытки закончились</div>
-                                    <?php
+                                        <?php
                                     endif; ?>
                                 </td>
                             </tr>
-                        <?php
+                            <?php
                         endforeach; ?>
                         </tbody>
                     </table>
-                <?php
+                    <?php
                 endif; ?>
             </div>
         </div>

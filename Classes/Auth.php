@@ -40,8 +40,7 @@ class Auth
         self::setUserType($connection, $id);
     }
 
-    private
-    static function setUserType(
+    private static function setUserType(
         PDO $connection,
         int $id
     ): void {
@@ -58,14 +57,12 @@ class Auth
         $_SESSION['user_type'] = $userType;
     }
 
-    public
-    static function isAuthenticated(): bool
+    public static function isAuthenticated(): bool
     {
         return isset($_SESSION['is_logged_in']) && $_SESSION['is_logged_in'];
     }
 
-    public
-    static function checkUserType(
+    public static function checkUserType(
         string $type
     ): bool {
         return isset($_SESSION['user_type']) && $_SESSION['user_type'] === $type;

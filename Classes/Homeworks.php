@@ -17,12 +17,10 @@ class Homeworks
         foreach ($options as $column => $value) {
             $stmt->bindValue(':' . $column, $value);
         }
+
         $stmt->execute();
-        echo $sql;
-        echo "<pre>";
-        print_r($options);
-        echo "</pre>";
-        return (int)$connection->query("SELECT last_value FROM homework_id_seq")->fetchColumn();
+
+        return (int)$connection->query("SELECT last_value FROM homeworks_id_seq")->fetchColumn();
     }
 
     public static function attachHomeworkToCourse(
@@ -67,13 +65,15 @@ class Homeworks
 
     public static function getAttachedHomeworks(PDO $connection, int $id): array
     {
-        $sql = "SELECT * FROM course_homeworks JOIN homeworks ON homeworks.id = course_homeworks.homework_id WHERE course_homeworks.course_id = :id";
+        $sql = "SELECT * FROM course_homeworks
+        JOIN homeworks ON homeworks.id = course_homeworks.homework_id WHERE course_homeworks.course_id = :id";
 
         $stmt = $connection->prepare($sql);
 
         $stmt->bindValue(':id', $id);
 
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -104,7 +104,6 @@ class Homeworks
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    //TODO Сделать базовый класс
     public static function delete(PDO $connection, array $optionsWHERE = []): void
     {
         $whereClause = implode(

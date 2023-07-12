@@ -19,11 +19,13 @@ if (Auth::isAuthenticated()) {
 try {
     if (isset($_POST['toEnter'])) {
         $connection = (new Database())->getDbConnection();
-        if (Auth::authenticate(
-            $connection,
-            $_POST['login'],
-            $_POST['password']
-        )) {
+        if (
+            Auth::authenticate(
+                $connection,
+                $_POST['login'],
+                $_POST['password']
+            )
+        ) {
             if (Auth::isConfirmed($connection, $_POST['login'])) {
                 Auth::login($connection, $_POST['login']);
                 Url::redirect($_SESSION['user_type'] . '/main.php');
@@ -59,7 +61,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                 <?php
                 if (!empty($error)) : ?>
                     <p class="errorMessage"><?= $error ?></p>
-                <?php
+                    <?php
                 endif; ?>
             </div>
             <div class="register__modal mt1rem">
