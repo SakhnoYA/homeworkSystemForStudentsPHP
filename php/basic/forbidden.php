@@ -26,7 +26,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
             </div>
         </div>
     </main>
+    <script>
+        setTimeout(function () {
+            window.location.href = "/index.php";
+        }, 4000);
+    </script>
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/tail.html' ?>
-<?php
-Url::redirect('', 4);

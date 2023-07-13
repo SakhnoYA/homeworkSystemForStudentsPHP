@@ -325,6 +325,10 @@ main {
     font-size: 17px;
 }
 
+.fs15 {
+    font-size: 15px;
+}
+
 .bd-none {
     border: none;
 }
@@ -508,4 +512,8 @@ textarea {
 }
 .role{
     margin-bottom: 5px;
+}
+
+.policy{
+    text-decoration: none;
 }

@@ -50,6 +50,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                             Преподаватель
                         </label>
                     </div>
+                    <label class="label-input fs15 mb16px">
+                        <input type="checkbox" required checked="checked">
+                        Я согласен(а) с <a class="policy" href="policy.html">политикой конфиденциальности</a>
+                    </label>
                     <button type="submit" class="register__modal-link">Зарегистрироваться</button>
                 </form>
             </div>

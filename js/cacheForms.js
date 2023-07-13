@@ -19,7 +19,7 @@ function collectAllFormData(forms)
     })
 
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/common/saveFormsData.php', true);
+    xhr.open('POST', '/php/common/saveFormsData.php', true);
 
     xhr.send(formDatas);
 

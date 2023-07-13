@@ -108,6 +108,10 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                             Преподаватель
                         </label>
                     </div>
+                    <label class="label-input fs15 mb16px">
+                        <input type="checkbox" required checked="checked">
+                        Я согласен(а) с <a class="policy" href="../basic/policy.html">политикой конфиденциальности</a>
+                    </label>
                     <input type="hidden" name="is_confirmed" value="1">
                     <button type="submit" name="toSave" class="register__modal-link">Сохранить</button>
                 </form>

@@ -36,7 +36,7 @@ function collectAllFormData()
         body: formDatas,
     };
 
-    fetch('/common/checkHomework.php' + window.location.search, requestOptions)
+    fetch('/php/common/checkHomework.php' + window.location.search, requestOptions)
         .then((response) => {
             if (response.ok) {
                 return response.json();
@@ -45,7 +45,7 @@ function collectAllFormData()
             }
         })
         .then((data) => {
-            window.location.href = '/common/resultHomework.php?attempt_id=' + data.attempt_id;
+            window.location.href = '/php/common/resultHomework.php?attempt_id=' + data.attempt_id;
         })
         .catch((error) => {
             console.error(error);

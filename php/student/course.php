@@ -34,7 +34,7 @@ try {
 
         if (isset($_POST['toSolve'])) {
             Url::redirect(
-                'student/homework.php',
+                'php/student/homework.php',
                 queryString: "homework_id=" . $_POST['homework_id'] . "&course_id=" . $_GET['id']
             );
         }
