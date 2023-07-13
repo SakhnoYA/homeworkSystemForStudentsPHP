@@ -86,7 +86,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                                 <td class="<?= $rowClass ?>"><?= $course['end_date'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $course['difficulty_level'] ?></td>
                                 <td class="<?= $rowClass ?>"><?= $course['category'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $course['availability'] === 1 ? 'да' : 'нет' ?></td>
+                                <td class="<?= $rowClass ?>"><?= $course['availability'] === true ? 'да' : 'нет' ?></td>
                                 <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($course['created_at'])) ?></td>
                                 <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($course['updated_at'])) ?></td>
                                 <td class="<?= $rowClass ?>"><?= $course['updated_by'] ?></td>
