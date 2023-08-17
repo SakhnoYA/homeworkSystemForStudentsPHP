@@ -104,21 +104,19 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                             $isOdd = !$isOdd;
                             ?>
                             <tr>
-                                <td class="<?= $rowClass ?>"><?= $user['id'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($user['registration_date'])) ?></td>
-                                <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
-                                <td class="<?= $rowClass ?>"><?= $user['readable_name'] ?></td>
+                                <td class="<?= htmlspecialchars($rowClass) ?>"><?= htmlspecialchars($user['id']) ?></td>
+                                <td class="<?= htmlspecialchars($rowClass) ?>"><?= htmlspecialchars(date('Y-m-d H:i', strtotime($user['registration_date']))) ?></td>
+                                <td class="<?= htmlspecialchars($rowClass) ?>"><?= htmlspecialchars($user['first_name']) ?></td>
+                                <td class="<?= htmlspecialchars($rowClass) ?>"><?= htmlspecialchars($user['last_name']) ?></td>
+                                <td class="<?= htmlspecialchars($rowClass) ?>"><?= htmlspecialchars($user['middle_name']) ?></td>
+                                <td class="<?= htmlspecialchars($rowClass) ?>"><?= htmlspecialchars($user['readable_name']) ?></td>
                                 <form method="post">
-                                    <input type="hidden" name="id" value="<?= $user['id'] ?>">
-                                    <td class="<?= $rowClass ?>">
-                                        <button class="table-button" name="confirmation" value="confirmed">Подтвердить
-                                        </button>
+                                    <input type="hidden" name="id" value="<?= htmlspecialchars($user['id']) ?>">
+                                    <td class="<?= htmlspecialchars($rowClass) ?>">
+                                        <button class="table-button" name="confirmation" value="confirmed">Подтвердить</button>
                                     </td>
-                                    <td class="<?= $rowClass ?>">
-                                        <button class="table-button" name="confirmation" value="declined">Удалить
-                                        </button>
+                                    <td class="<?= htmlspecialchars($rowClass) ?>">
+                                        <button class="table-button" name="confirmation" value="declined">Удалить</button>
                                     </td>
                                 </form>
                             </tr>

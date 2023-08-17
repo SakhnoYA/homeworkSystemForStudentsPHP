@@ -105,14 +105,14 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/head.html' ?>
                         $isOdd = !$isOdd;
                         ?>
                         <tr>
-                            <td class="<?= $rowClass ?>"><?= $user['id'] ?></td>
-                            <td class="<?= $rowClass ?>"><?= date('Y-m-d H:i', strtotime($user['registration_date'])) ?></td>
-                            <td class="<?= $rowClass ?>"><?= $user['first_name'] ?></td>
-                            <td class="<?= $rowClass ?>"><?= $user['last_name'] ?></td>
-                            <td class="<?= $rowClass ?>"><?= $user['middle_name'] ?></td>
-                            <td class="<?= $rowClass ?>"><?= $user['readable_name'] ?></td>
-                            <td class="<?= $rowClass ?>"><?= $user['ip'] ?></td>
-                            <td class="<?= $rowClass ?>"><?= $user['is_confirmed'] ? 'Имеется' : 'Отсутствует' ?></td>
+                            <td class="<?= $rowClass ?>"><?= htmlspecialchars($user['id']) ?></td>
+                            <td class="<?= $rowClass ?>"><?= htmlspecialchars(date('Y-m-d H:i', strtotime($user['registration_date']))) ?></td>
+                            <td class="<?= $rowClass ?>"><?= htmlspecialchars($user['first_name']) ?></td>
+                            <td class="<?= $rowClass ?>"><?= htmlspecialchars($user['last_name']) ?></td>
+                            <td class="<?= $rowClass ?>"><?= htmlspecialchars($user['middle_name']) ?></td>
+                            <td class="<?= $rowClass ?>"><?= htmlspecialchars($user['readable_name']) ?></td>
+                            <td class="<?= $rowClass ?>"><?= htmlspecialchars($user['ip']) ?></td>
+                            <td class="<?= $rowClass ?>"><?= htmlspecialchars($user['is_confirmed']) ? 'Имеется' : 'Отсутствует' ?></td>
                             <td class="<?= $rowClass ?>">
                                 <form method="post">
                                     <input type="hidden" name="id" value="<?= $user['id'] ?>">
